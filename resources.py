@@ -37,7 +37,7 @@ def show_resources():
             """)
         
         with st.expander("📑 Modèle de publication"):
-            st.markdown("""
+             st.markdown("""
                 Comment citer notre unité dans vos publications :""")
     
     with col2:
