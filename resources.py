@@ -41,27 +41,27 @@ def show_resources():
                 Comment citer notre unité dans vos publications :""")
     
     with col2:
-    st.markdown("## 🎓 Formations")
-    
-    st.markdown("""
-    <div class="info-card">
-    <h4>Formation à l'ASAP 2020</h4>
-    <p><strong>Durée :</strong> 2 jours</p>
-    <p><strong>Programme :</strong></p>
-    <ul>
-        <li>Théorie de l'adsorption</li>
-        <li>Préparation des échantillons</li>
-        <li>Paramétrage des analyses</li>
-        <li>Traitement des données</li>
-    </ul>
-    <p><strong>Prochaine session :</strong> 15-16 Avril 2026</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("## 🔗 Liens utiles")
-    st.markdown("""
-    - [Micromeritics - ASAP 2020](https://www.micromeritics.com)
-    - [Université de Tunis El Manar](http://www.utm.rnu.tn)
-    - [Ministère de l'Enseignement Supérieur](http://www.mes.tn)
-    """)
-              
+        st.markdown("## 🎓 Formations")
+        
+        st.markdown("""
+        <div class="info-card">
+        <h4>Formation à l'ASAP 2020</h4>
+        <p><strong>Durée :</strong> 2 jours</p>
+        <p><strong>Programme :</strong></p>
+        <ul>
+            <li>Théorie de l'adsorption</li>
+            <li>Préparation des échantillons</li>
+            <li>Paramétrage des analyses</li>
+            <li>Traitement des données</li>
+        </ul>
+        <p><strong>Prochaine session :</strong> 15-16 Avril 2026</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("## 🔗 Liens utiles")
+        st.markdown("""
+        - [Micromeritics - ASAP 2020](https://www.micromeritics.com)
+        - [Université de Tunis El Manar](http://www.utm.rnu.tn)
+        - [Ministère de l'Enseignement Supérieur](http://www.mes.tn)
+        """)
+                  
