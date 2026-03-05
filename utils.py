@@ -80,35 +80,17 @@ def generate_pdf(data: dict) -> bytes:
     pdf.set_font("Arial", size=10)
 
     # ----- Trois logos (placeholders) -----
-        
-    DEBUG_LOGOS = st.secrets.get("DEBUG_LOGOS", False)
-    
-    def debug_logos(message):
-        if DEBUG_LOGOS:
-            st.write(f"🔍 DEBUG LOGOS: {message}")
-    
+            
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    debug_logos(f"BASE_DIR = {BASE_DIR}")
     
-    # Vérifier le contenu du dossier logo
-    logo_dir = os.path.join(BASE_DIR, "logo")
-    if os.path.exists(logo_dir) and os.path.isdir(logo_dir):
-        fichiers = os.listdir(logo_dir)
-        debug_logos(f"Contenu du dossier 'logo' : {fichiers}")
-    else:
-        debug_logos(f"Le dossier 'logo' n'existe pas à {logo_dir}")
-    
-    # Liste des noms de fichiers (à adapter exactement après voir le contenu)
-    noms_fichiers = ["logo-gauche.jpg", "logo-centre.png", "logo-droit.png"]  # Modifiez selon le contenu
+    noms_fichiers = ["logo-gauche.jpg", "logo-centre.png", "logo-droit.png"]
     positions = [(10, 8, 30), (90, 8, 30), (170, 8, 30)]
     
     for i, nom in enumerate(noms_fichiers):
-        chemin = os.path.join(BASE_DIR, "logo", nom)
-        debug_logos(f"Test: {chemin} → existe ? {os.path.exists(chemin)}")
+        chemin = os.path.join(BASE_DIR, "Logo", nom)   # attention au L majuscule
         if os.path.exists(chemin):
             pdf.image(chemin, x=positions[i][0], y=positions[i][1], w=positions[i][2])
         else:
-            debug_logos(f"⚠️ Logo {nom} non trouvé, utilisation du fallback.")
             # Fallback rectangle gris
             pdf.set_fill_color(200, 200, 200)
             pdf.rect(positions[i][0], positions[i][1], positions[i][2], 30, 'F')
