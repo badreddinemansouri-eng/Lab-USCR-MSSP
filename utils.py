@@ -80,45 +80,34 @@ def generate_pdf(data: dict) -> bytes:
     pdf.set_font("Arial", size=10)
 
     # ----- Trois logos (placeholders) -----
-    
-
-    
-    # En début de fichier, après les imports
+        
     DEBUG_LOGOS = st.secrets.get("DEBUG_LOGOS", False)
     
-    # Fonction de debug
     def debug_logos(message):
         if DEBUG_LOGOS:
             st.write(f"🔍 DEBUG LOGOS: {message}")
     
-    # Obtenir le répertoire de ce fichier (utils.py)
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     debug_logos(f"BASE_DIR = {BASE_DIR}")
     
-    # Liste des noms de fichiers (à adapter exactement à vos noms)
-    noms_fichiers = ["logo-gauche.jpg", "logo-centre.png", "logo-droit.png"]
+    # Vérifier le contenu du dossier logo
+    logo_dir = os.path.join(BASE_DIR, "logo")
+    if os.path.exists(logo_dir) and os.path.isdir(logo_dir):
+        fichiers = os.listdir(logo_dir)
+        debug_logos(f"Contenu du dossier 'logo' : {fichiers}")
+    else:
+        debug_logos(f"Le dossier 'logo' n'existe pas à {logo_dir}")
+    
+    # Liste des noms de fichiers (à adapter exactement après voir le contenu)
+    noms_fichiers = ["logo-gauche.jpg", "logo-centre.png", "logo-droit.png"]  # Modifiez selon le contenu
     positions = [(10, 8, 30), (90, 8, 30), (170, 8, 30)]
     
     for i, nom in enumerate(noms_fichiers):
-        # Chemins possibles
-        chemins = [
-            os.path.join(BASE_DIR, "logo", nom),
-            os.path.join(BASE_DIR, nom),
-            os.path.join(os.getcwd(), "logo", nom),
-            os.path.join(os.getcwd(), nom),
-            "./logo/" + nom,
-            "./" + nom,
-            "logo/" + nom,
-            nom
-        ]
-        trouve = False
-        for chemin in chemins:
-            debug_logos(f"Test: {chemin} -> existe ? {os.path.exists(chemin)}")
-            if os.path.exists(chemin):
-                pdf.image(chemin, x=positions[i][0], y=positions[i][1], w=positions[i][2])
-                trouve = True
-                break
-        if not trouve:
+        chemin = os.path.join(BASE_DIR, "logo", nom)
+        debug_logos(f"Test: {chemin} → existe ? {os.path.exists(chemin)}")
+        if os.path.exists(chemin):
+            pdf.image(chemin, x=positions[i][0], y=positions[i][1], w=positions[i][2])
+        else:
             debug_logos(f"⚠️ Logo {nom} non trouvé, utilisation du fallback.")
             # Fallback rectangle gris
             pdf.set_fill_color(200, 200, 200)
