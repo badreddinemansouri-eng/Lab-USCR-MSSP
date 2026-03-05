@@ -163,9 +163,10 @@ def generate_pdf(data: dict) -> bytes:
     pdf.set_font("Arial", 'B', 10)
     pdf.cell(0, line_height, clean_text("Traitement de l'échantillon :"), ln=True)
     pdf.set_font("Arial", size=9)
-    ambiance = "☒" if data.get('treatment_ambiance') else "☐"
+    # Remplacement des symboles de case par [X] ou [ ]
+    ambiance = "[X]" if data.get('treatment_ambiance') else "[ ]"
     pdf.cell(30, line_height, clean_text(f"{ambiance} Ambiance"), 0, 0)
-    pdf.cell(20, line_height, clean_text("Autre ☐"), 0, 0)
+    pdf.cell(20, line_height, clean_text("Autre [ ]"), 0, 0)
     pdf.cell(15, line_height, clean_text("T ="), 0, 0)
     pdf.cell(20, line_height, clean_text(data.get('treatment_temperature', '_____ °C')), 0, 1)
 
@@ -184,7 +185,7 @@ def generate_pdf(data: dict) -> bytes:
     selected = data.get('analysis_types', [])
 
     for analysis in analysis_list:
-        checked = "☒" if analysis in selected else "☐"
+        checked = "[X]" if analysis in selected else "[ ]"
         pdf.cell(40, line_height, clean_text(f"{checked} {analysis}"), 0, 1)
 
     # Right column: signature block
