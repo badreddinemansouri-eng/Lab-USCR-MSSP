@@ -97,7 +97,7 @@ def generate_pdf(data: dict) -> bytes:
         return None  # pas trouvé
     
     # Liste des noms de fichiers (adaptez-les exactement à vos noms réels)
-    noms_fichiers = ["logo-gauche.png", "logo-centre.png", "logo-droit.png"]
+    noms_fichiers = ["logo-gauche.jpg", "logo-centre.png", "logo-droit.png"]
     positions = [(10, 8, 30), (90, 8, 30), (170, 8, 30)]
     
     for i, nom in enumerate(noms_fichiers):
