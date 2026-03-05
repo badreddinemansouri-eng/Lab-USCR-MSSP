@@ -34,7 +34,7 @@ def show_contact():
         
         # Replace with actual map image or embed Google Maps
         st.markdown("### 🗺️ Plan d'accès")
-        st.image("https://imgur.com/HuSoFTz", 
+        st.image("https://i.imgur.com/dCemmMW.png", 
                 use_column_width=True)
     
     with col2:
