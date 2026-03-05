@@ -78,18 +78,18 @@ def generate_pdf(data: dict) -> bytes:
 
     # ----- Trois logos (placeholders) -----
     pdf.set_fill_color(200, 200, 200)
-    pdf.image("https://imgur.com/MJxfUx7", x=10, y=8, w=30)
+    pdf.image("https://imgur.com/MJxfUx7.jpeg", x=10, y=8, w=30)
     pdf.set_xy(10, 15)
     pdf.set_font("Arial", 'B', 8)
     pdf.cell(30, 6, clean_text("Logo"), align='C', border=0)
 
     pdf.set_fill_color(200, 200, 200)
-    pdf.image("https://imgur.com/zntcsDm", x=90, y=8, w=30)
+    pdf.image("https://imgur.com/zntcsDm.png", x=90, y=8, w=30)
     pdf.set_xy(90, 15)
     pdf.cell(30, 6, clean_text("Logo"), align='C')
 
     pdf.set_fill_color(200, 200, 200)
-    pdf.image("https://imgur.com/b4yppi3", x=170, y=8, w=30)
+    pdf.image("https://imgur.com/b4yppi3.png", x=170, y=8, w=30)
     pdf.set_xy(170, 15)
     pdf.cell(30, 6, clean_text("Logo"), align='C')
 
