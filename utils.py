@@ -231,16 +231,26 @@ def generate_pdf(data: dict) -> bytes:
     pdf.set_y(max(pdf.get_y(), start_y + len(analysis_list)*line_height + 10))
 
     # ----- Avis du responsable (aligné à gauche) -----
+    # ----- Avis du responsable (aligné à gauche) -----
     pdf.set_x(left_margin)
     pdf.ln(5)
     pdf.set_font("Arial", size=10)
     pdf.cell(0, line_height, clean_text("Avis du responsable des équipements : L. BEN HAMMOUDA"), ln=True)
-    # Ligne de pointillés sous l'avis
     pdf.set_x(left_margin)
     pdf.cell(0, line_height, clean_text("........................................"), ln=True)
-    pdf.ln(3)
-
-    # ----- Instructions spéciales / remarques (3 lignes) -----
+    pdf.ln(5)
+    
+    # ----- Date et référence (en gras) -----
+    pdf.set_font("Arial", 'B', 10)   # passage en gras
+    date_str = format_date(data.get('date_demande'))
+    pdf.cell(35, line_height, clean_text("Date de la demande :"), 0, 0)
+    pdf.cell(50, line_height, clean_text(" " + date_str), 0, 0)
+    pdf.cell(45, line_height, clean_text("Références de la Demande :"), 0, 0)
+    pdf.cell(0, line_height, clean_text(" " + data.get('request_id', 'MSSP_2025')), 0, 1)
+    pdf.set_font("Arial", size=10)   # retour à la police normale
+    pdf.ln(3)   # espace avant les remarques
+    
+    # ----- Remarques en bas -----
     pdf.set_font("Arial", size=8)
     remarques = [
         "*Masse de l'échantillon entre 120 et 150 mg.",
@@ -250,17 +260,6 @@ def generate_pdf(data: dict) -> bytes:
     for ligne in remarques:
         pdf.cell(0, line_height, clean_text(ligne), ln=True)
     pdf.ln(3)
-
-    # ----- Date et référence -----
-    date_str = format_date(data.get('date_demande'))
-    pdf.cell(35, line_height, clean_text("Date de la demande :"), 0, 0)
-    pdf.cell(50, line_height, clean_text(" " + date_str), 0, 0)
-    pdf.cell(45, line_height, clean_text("Références de la Demande :"), 0, 0)
-    pdf.cell(0, line_height, clean_text(" " + data.get('request_id', 'MSSP_2025')), 0, 1)
-
-    # Espace supplémentaire en bas
-    pdf.ln(5)
-
     return pdf.output(dest='S')
 # ---------- Email Functions ----------
 def send_email(recipient: str, request_id: str, pdf_bytes: bytes):
