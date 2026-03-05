@@ -210,13 +210,13 @@ def generate_pdf(data: dict) -> bytes:
     # Ajustement vertical
     pdf.set_y(max(pdf.get_y(), start_y + len(analysis_list)*line_height + 10))
 
-    # ----- Avis du responsable (à droite, sous la signature, avec sa propre ligne de pointillés) -----
+    # ----- Avis du responsable (déplacé à gauche pour meilleure marge) -----
     pdf.ln(2)
-    pdf.set_x(120)
+    pdf.set_x(left_margin)  # aligné à gauche avec le reste
     pdf.set_font("Arial", size=10)
-    pdf.cell(75, line_height, clean_text("Avis du responsable des équipements : L. BEN HAMMOUDA"), ln=True)
-    pdf.set_x(120)
-    pdf.cell(75, line_height, clean_text("......................................"), ln=True)
+    pdf.cell(100, line_height, clean_text("Avis du responsable des équipements : L. BEN HAMMOUDA"), ln=True)
+    pdf.set_x(left_margin)
+    pdf.cell(100, line_height, clean_text("......................................"), ln=True)
 
     # ----- Date et référence (sur toute la largeur) -----
     pdf.ln(5)
@@ -231,11 +231,11 @@ def generate_pdf(data: dict) -> bytes:
     pdf.ln(5)
     pdf.set_x(left_margin)
     pdf.set_font("Arial", size=8)
-    pdf.multi_cell(0, line_height, clean_text("Masse de l'échantillon entre 120 et 150 mg et."))
+    pdf.multi_cell(0, line_height, clean_text("*Masse de l'échantillon entre 120 et 150 mg et."))
     pdf.set_x(left_margin)
-    pdf.multi_cell(0, line_height, clean_text("formulaire doit être dûment rempli et signé."))
+    pdf.multi_cell(0, line_height, clean_text("*formulaire doit être dûment rempli et signé."))
     pdf.set_x(left_margin)
-    pdf.multi_cell(0, line_height, clean_text("Veuillez récupérer vos échantillons, sinon ils seront jetés après une semaine."))
+    pdf.multi_cell(0, line_height, clean_text("*Veuillez récupérer vos échantillons, sinon ils seront jetés après une semaine."))
 
     # Espace final
     pdf.ln(3)
