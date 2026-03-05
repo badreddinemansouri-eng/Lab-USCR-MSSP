@@ -4,6 +4,9 @@ from analyses import show_analyses
 from request import show_request
 from resources import show_resources
 from contact import show_contact
+from bet import show_bet
+from porosite import show_porosite
+from isothermes import show_isothermes
 
 st.set_page_config(
     page_title="USR Mesure de Surface Spécifique et Porosité",
@@ -12,13 +15,24 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS
+# ---------- Mode debug (cacher les erreurs aux utilisateurs) ----------
+if not st.secrets.get("debug", False):
+    st.set_option('client.showErrorDetails', False)
+
+# ---------- CSS global avec animations et responsive ----------
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     
-    html, body, [class*="css"] {
+    * {
         font-family: 'Inter', sans-serif;
+        box-sizing: border-box;
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
     
     .main-header {
@@ -28,6 +42,7 @@ st.markdown("""
         color: white;
         text-align: center;
         margin-bottom: 2rem;
+        animation: fadeIn 0.8s ease;
     }
     
     .info-card {
@@ -36,26 +51,64 @@ st.markdown("""
         padding: 1.5rem;
         margin: 1rem 0;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease;
+        transition: all 0.3s ease;
+        animation: fadeIn 0.8s ease;
     }
     
     .info-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .analysis-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+        cursor: pointer;
+        border: 1px solid #e9ecef;
+        height: 100%;
+        animation: fadeIn 0.8s ease;
+    }
+    
+    .analysis-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+    }
+    
+    .analysis-card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 1rem;
     }
     
     .custom-button {
         background-color: #667eea;
         color: white;
         padding: 0.5rem 2rem;
-        border-radius: 5px;
+        border-radius: 25px;
         text-decoration: none;
         font-weight: 600;
-        transition: background-color 0.3s ease;
+        transition: all 0.3s ease;
+        display: inline-block;
+        border: none;
     }
     
     .custom-button:hover {
         background-color: #764ba2;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .main-header h1 { font-size: 1.8rem; }
+        .main-header h2 { font-size: 1.2rem; }
+        .analysis-card img { height: 140px; }
+        .stColumn { margin-bottom: 1rem; }
     }
     
     .footer {
@@ -65,25 +118,25 @@ st.markdown("""
         border-radius: 10px;
         margin-top: 3rem;
         text-align: center;
+        animation: fadeIn 0.8s ease;
     }
     
-    .css-1d391kg {
-        background-color: #f8f9fa;
-    }
+    /* Sidebar */
+    .css-1d391kg { background-color: #f8f9fa; }
     
-    h1, h2, h3 {
-        color: #2c3e50;
-        font-weight: 600;
-    }
+    h1, h2, h3 { color: #2c3e50; font-weight: 600; }
     
-    .equipment-image {
+    .stApp { background-color: #f5f5f5; }
+    .main .block-container {
+        background-color: white;
         border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        margin: 1rem 0;
+        padding: 2rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
 </style>
 """, unsafe_allow_html=True)
 
+# ---------- Navigation ----------
 with st.sidebar:
     st.image("https://via.placeholder.com/200x100?text=USR+Logo", use_column_width=True)
     st.markdown("## **Unité de Service**")
@@ -108,8 +161,9 @@ with st.sidebar:
     st.markdown("1068 Tunis, Tunisie")
     
     st.markdown("---")
-    st.markdown("**Version 2.1** | © 2026")
+    st.markdown("**Version 3.0** | © 2026")
 
+# Routage
 if page == "🏠 Accueil":
     show_home()
 elif page == "🔬 Analyses":
