@@ -106,8 +106,8 @@ def generate_pdf(data: dict) -> bytes:
     line_height = 6
     left_margin = 10
     label_width = 55
-    value_width = 135  # largeur pour la valeur
-    value_x = left_margin + label_width + 2  # position par défaut après le label
+    value_width = 135
+    value_x = left_margin + label_width + 2
 
     def write_multiline(label, value):
         pdf.set_x(left_margin)
@@ -131,19 +131,18 @@ def generate_pdf(data: dict) -> bytes:
     pdf.cell(20, line_height, clean_text("Qualité : "), 0, 0)
     pdf.cell(30, line_height, clean_text(data.get('qualification', '__________________')), 0, 1)
 
-    # Champs longs (position par défaut)
+    # Champs longs
     write_multiline("Organisme", data.get('organisation', '__________________'))
     write_multiline("Diplôme en cours", data.get('diploma', '__________________'))
     write_multiline("Nom et prénom de l'encadrant", data.get('supervisor_name', '__________________'))
 
-    # ----- Champ Directeur (décalé de +15 à droite) -----
+    # ----- Champ Directeur (décalé de +15) -----
     pdf.set_x(left_margin)
     pdf.cell(label_width, line_height, clean_text("Nom et prénom du Directeur de laboratoire : "), 0, 0)
-    # Position X augmentée de 15 points
-    pdf.set_x(value_x + 15)
-    pdf.multi_cell(value_width - 15, line_height, clean_text(data.get('director_name', '__________________')), 0, 'L')
+    pdf.set_x(value_x + 13)
+    pdf.multi_cell(value_width - 13, line_height, clean_text(data.get('director_name', '__________________')), 0, 'L')
 
-    # ----- Champ Laboratoire (décalé de +15 à droite) -----
+    # ----- Champ Laboratoire (décalé de +15) -----
     pdf.set_x(left_margin)
     pdf.set_font("Arial", size=8)
     pdf.cell(label_width, line_height, clean_text("Laboratoire/Unité de Recherche/Service (Nom & Code) : "), 0, 0)
@@ -158,7 +157,7 @@ def generate_pdf(data: dict) -> bytes:
     pdf.cell(0, line_height, clean_text("Nombre d'échantillons (max 4)"), ln=True)
     pdf.set_font("Arial", size=9)
 
-    col_widths = [40, 60, 40]  # Nom, Nature, Traitement
+    col_widths = [40, 60, 40]
     pdf.cell(col_widths[0], line_height, clean_text("Nom (max 8 car.)"), 1, 0, 'C')
     pdf.cell(col_widths[1], line_height, clean_text("Nature de l'échantillon"), 1, 0, 'C')
     pdf.cell(col_widths[2], line_height, clean_text("Traitement (°C)"), 1, 1, 'C')
@@ -200,7 +199,7 @@ def generate_pdf(data: dict) -> bytes:
         checked = "[X]" if analysis in selected else "[ ]"
         pdf.cell(50, line_height, clean_text(f"{checked} {analysis}"), 0, 1)
 
-    # Colonne droite : signature (plus large)
+    # Colonne droite : signature
     pdf.set_xy(120, start_y)
     pdf.set_font("Arial", 'B', 9)
     pdf.multi_cell(75, line_height, clean_text("Signature & cachet de l'Encadrant / du Directeur du Laboratoire (Obligatoire) :"))
@@ -215,14 +214,21 @@ def generate_pdf(data: dict) -> bytes:
     pdf.ln(5)
     pdf.set_font("Arial", size=10)
     pdf.cell(0, line_height, clean_text("Avis du responsable des équipements : L. BEN HAMMOUDA"), ln=True)
-    pdf.ln(5)
+    # Ligne de pointillés sous l'avis
+    pdf.set_x(left_margin)
+    pdf.cell(0, line_height, clean_text("........................................"), ln=True)
+    pdf.ln(3)  # Petit espace après
 
-    # ----- Instructions spéciales (si présentes) -----
-    special = data.get('special_instructions', '')
-    if special:
-        pdf.set_font("Arial", size=9)
-        pdf.multi_cell(0, line_height, clean_text(special), 0, 'L')
-        pdf.ln(3)
+    # ----- Instructions spéciales / remarques (3 lignes) -----
+    pdf.set_font("Arial", size=9)
+    remarques = [
+        "Masse de l'échantillon entre 120 et 150 mg.",
+        "formulaire doit être dument rempli et signé.",
+        "Veuillez récupérer vos échantillons, sinon ils seront jetés après une semaine."
+    ]
+    for ligne in remarques:
+        pdf.cell(0, line_height, clean_text(ligne), ln=True)
+    pdf.ln(3)
 
     # ----- Date et référence -----
     date_str = format_date(data.get('date_demande'))
