@@ -64,7 +64,7 @@ def show_request():
         submitted = st.form_submit_button("Soumettre la demande")
 
     if submitted:
-        required = [researcher_name, researcher_email, organisation, director_name, lab_unit, temp]
+        required = [researcher_name, researcher_email, organisation, director_name, lab_unit]
         if not all(required):
             st.error("Veuillez remplir tous les champs obligatoires (*).")
             return
