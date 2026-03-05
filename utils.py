@@ -11,25 +11,13 @@ from email.mime.application import MIMEApplication
 
 # ---------- Nettoyage du texte ----------
 def clean_text(text):
-    """Remplace les caractères Unicode problématiques par leurs équivalents ASCII."""
     if text is None:
         return ""
     replacements = {
-        "\u2019": "'",
-        "\u2018": "'",
-        "\u201c": '"',
-        "\u201d": '"',
-        "\u2013": "-",
-        "\u2014": "--",
-        "\u00e9": "e",
-        "\u00e8": "e",
-        "\u00ea": "e",
-        "\u00e2": "a",
-        "\u00f4": "o",
-        "\u00ee": "i",
-        "\u00fb": "u",
-        "\u00e0": "a",
-        "\u00e7": "c",
+        "\u2019": "'", "\u2018": "'", "\u201c": '"', "\u201d": '"',
+        "\u2013": "-", "\u2014": "--", "\u00e9": "e", "\u00e8": "e",
+        "\u00ea": "e", "\u00e2": "a", "\u00f4": "o", "\u00ee": "i",
+        "\u00fb": "u", "\u00e0": "a", "\u00e7": "c",
     }
     for old, new in replacements.items():
         text = text.replace(old, new)
@@ -37,7 +25,6 @@ def clean_text(text):
 
 # ---------- Formatage de la date ----------
 def format_date(date_str):
-    """Convertit une date ISO (YYYY-MM-DD) en format JJ/MM/AAAA."""
     if not date_str:
         return datetime.now().strftime("%d/%m/%Y")
     try:
@@ -109,69 +96,75 @@ def generate_pdf(data: dict) -> bytes:
 
     pdf.set_font("Arial", size=10)
 
-    # ----- Titre -----
+    # ----- Titre (centré) -----
     pdf.set_y(40)
     pdf.set_font("Arial", 'B', 14)
     pdf.cell(0, 10, txt=clean_text("Demande d'une mesure de la surface specifique et de la porosite"), ln=True, align='C')
     pdf.ln(5)
 
     # ----- Informations chercheur (marges normales A4) -----
-    pdf.set_font("Arial", 'B', size=9)
+    pdf.set_font("Arial", size=9)
     line_height = 6
     left_margin = 10
     label_width = 55
-    value_width = 130
+    value_width = 135
     value_x = left_margin + label_width + 2
 
     def write_multiline(label, value):
         pdf.set_x(left_margin)
-        pdf.cell(label_width, line_height, clean_text(label + " :"), 0, 0)
+        pdf.cell(label_width, line_height, clean_text(label + " : "), 0, 0)
         pdf.set_x(value_x)
         pdf.multi_cell(value_width, line_height, clean_text(value), 0, 'L')
 
     # Ligne 1 : Nom + Tél
     pdf.set_x(left_margin)
-    pdf.cell(label_width, line_height, clean_text("Nom et prénom du demandeur :"), 0, 0)
+    pdf.cell(label_width, line_height, clean_text("Nom et prénom du demandeur : "), 0, 0)
     pdf.set_x(value_x)
     pdf.cell(value_width - 50, line_height, clean_text(data.get('researcher_name', '__________________')), 0, 0)
-    pdf.cell(20, line_height, clean_text("Tél :"), 0, 0)
+    pdf.cell(20, line_height, clean_text("Tél : "), 0, 0)
     pdf.cell(30, line_height, clean_text(data.get('researcher_phone', '__________________')), 0, 1)
 
     # Ligne 2 : Email + Qualité
     pdf.set_x(left_margin)
-    pdf.cell(label_width, line_height, clean_text("Email :"), 0, 0)
+    pdf.cell(label_width, line_height, clean_text("Email : "), 0, 0)
     pdf.set_x(value_x)
     pdf.cell(value_width - 50, line_height, clean_text(data.get('researcher_email', '__________________')), 0, 0)
-    pdf.cell(20, line_height, clean_text("Qualité :"), 0, 0)
+    pdf.cell(20, line_height, clean_text("Qualité : "), 0, 0)
     pdf.cell(30, line_height, clean_text(data.get('qualification', '__________________')), 0, 1)
 
+    # Champs longs
     write_multiline("Organisme", data.get('organisation', '__________________'))
     write_multiline("Diplôme en cours", data.get('diploma', '__________________'))
     write_multiline("Nom et prénom de l'encadrant", data.get('supervisor_name', '__________________'))
     write_multiline("Nom et prénom du Directeur de laboratoire", data.get('director_name', '__________________'))
 
-    # Laboratoire
+    # Laboratoire (label très long)
     pdf.set_x(left_margin)
-    pdf.set_font("Arial", 'B', size=8)
-    pdf.cell(label_width, line_height, clean_text("Laboratoire/Unité de Recherche/Service (Nom & Code) :"), 0, 0)
-    pdf.set_font("Arial", 'B', size=9)
+    pdf.set_font("Arial", size=8)
+    pdf.cell(label_width, line_height, clean_text("Laboratoire/Unité de Recherche/Service (Nom & Code) : "), 0, 0)
+    pdf.set_font("Arial", size=9)
     pdf.set_x(value_x)
     pdf.multi_cell(value_width, line_height, clean_text(data.get('lab_unit', '__________________')), 0, 'L')
 
     pdf.ln(3)
 
-    # ----- Tableau des échantillons -----
+    # ----- Titre du tableau (centré) -----
     pdf.set_font("Arial", 'B', 10)
-    pdf.cell(0, line_height, clean_text("Nombre d'échantillons (max 4)"), ln=True)
-    pdf.set_font("Arial", 'B', size=9)
+    pdf.cell(0, line_height, clean_text("Nombre d'échantillons (max 4)"), ln=True, align='C')
+    pdf.set_font("Arial", size=9)
 
-    col_widths = [40, 60, 40]
+    # ----- Tableau des échantillons (centré) -----
+    col_widths = [40, 60, 40]  # Nom, Nature, Traitement
+    table_width = sum(col_widths)
+    left_table = (210 - table_width) / 2  # centrer sur page A4
+    pdf.set_x(left_table)
     pdf.cell(col_widths[0], line_height, clean_text("Nom (max 8 car.)"), 1, 0, 'C')
     pdf.cell(col_widths[1], line_height, clean_text("Nature de l'échantillon"), 1, 0, 'C')
     pdf.cell(col_widths[2], line_height, clean_text("Traitement (°C)"), 1, 1, 'C')
 
     samples = data.get('samples', [])
     for i in range(4):
+        pdf.set_x(left_table)
         sample = samples[i] if i < len(samples) else {}
         pdf.cell(col_widths[0], line_height, clean_text(sample.get('name', '')[:8]), 1)
         pdf.cell(col_widths[1], line_height, clean_text(sample.get('nature', '')), 1)
@@ -207,35 +200,49 @@ def generate_pdf(data: dict) -> bytes:
         checked = "[X]" if analysis in selected else "[ ]"
         pdf.cell(50, line_height, clean_text(f"{checked} {analysis}"), 0, 1)
 
-    # Colonne droite : signature
+    # Colonne droite : signature avec ligne de pointillés
     pdf.set_xy(120, start_y)
     pdf.set_font("Arial", 'B', 9)
-    pdf.multi_cell(70, line_height, clean_text("Signature & cachet de l'Encadrant / du Directeur du Laboratoire (Obligatoire) :"))
+    pdf.multi_cell(75, line_height, clean_text("Signature & cachet de l'Encadrant / du Directeur du Laboratoire (Obligatoire) :"))
     pdf.set_xy(120, pdf.get_y())
-    pdf.cell(70, line_height, clean_text("......................................"), ln=True)
+    pdf.cell(75, line_height, clean_text("......................................"), ln=True)
 
-    # Ajustement vertical pour que la hauteur soit au moins celle de la colonne gauche
+    # Ajustement vertical
     pdf.set_y(max(pdf.get_y(), start_y + len(analysis_list)*line_height + 10))
 
-    # ----- Avis du responsable (aligné à droite sous la signature) -----
-    avis_y = pdf.get_y() + 5  # un peu d'espace après la signature
-    pdf.set_xy(120, avis_y)
-    pdf.set_font("Arial", 'B', size=10)
-    pdf.cell(70, line_height, clean_text("Avis du responsable des équipements : L. BEN HAMMOUDA"), ln=True, align='L')
+    # ----- Avis du responsable (à droite, sous la signature, avec sa propre ligne de pointillés) -----
+    pdf.ln(2)
     pdf.set_x(120)
-    pdf.cell(70, line_height, clean_text("............................................."), ln=True)
-    pdf.ln(5)  # espace avant la date
+    pdf.set_font("Arial", size=10)
+    pdf.cell(75, line_height, clean_text("Avis du responsable des équipements : L. BEN HAMMOUDA"), ln=True)
+    pdf.set_x(120)
+    pdf.cell(75, line_height, clean_text("......................................"), ln=True)
 
-    # ----- Date et référence -----
+    # ----- Date et référence (sur toute la largeur) -----
+    pdf.ln(5)
+    pdf.set_x(left_margin)
     date_str = format_date(data.get('date_demande'))
     pdf.cell(35, line_height, clean_text("Date de la demande :"), 0, 0)
     pdf.cell(50, line_height, clean_text(" " + date_str), 0, 0)
     pdf.cell(45, line_height, clean_text("Références de la Demande :"), 0, 0)
     pdf.cell(0, line_height, clean_text(" " + data.get('request_id', 'MSSP_2025')), 0, 1)
 
+    # ----- Trois remarques en bas à gauche (petite police) -----
+    pdf.ln(5)
+    pdf.set_x(left_margin)
+    pdf.set_font("Arial", size=8)
+    pdf.multi_cell(0, line_height, clean_text("Masse de l'échantillon entre 120 et 150 mg et."))
+    pdf.set_x(left_margin)
+    pdf.multi_cell(0, line_height, clean_text("formulaire doit être dûment rempli et signé."))
+    pdf.set_x(left_margin)
+    pdf.multi_cell(0, line_height, clean_text("Veuillez récupérer vos échantillons, sinon ils seront jetés après une semaine."))
+
+    # Espace final
+    pdf.ln(3)
+
     return pdf.output(dest='S')
 
-# ---------- Email Functions (inchangées) ----------
+# ---------- Email Functions ----------
 def send_email(recipient: str, request_id: str, pdf_bytes: bytes):
     sender = st.secrets["EMAIL_USER"]
     password = st.secrets["EMAIL_PASSWORD"]
