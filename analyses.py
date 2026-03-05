@@ -14,7 +14,7 @@ def show_analyses():
     with col1:
         st.markdown("""
         <div class="analysis-card" onclick="window.location.href='?page=BET'">
-            <img src="https://via.placeholder.com/300x180?text=Surface+specifique" alt="BET">
+            <img src="https://www.aanda.org/articles/aa/full_html/2023/04/aa43069-22/F5.html" alt="BET">
             <h3>📈 Surface spécifique (BET)</h3>
             <p>Méthode multipoints pour une mesure précise de la surface des matériaux.</p>
             <p><strong>Applications :</strong> Catalyseurs, nanomatériaux, poudres</p>
@@ -28,7 +28,7 @@ def show_analyses():
     with col2:
         st.markdown("""
         <div class="analysis-card">
-            <img src="https://via.placeholder.com/300x180?text=Porosite" alt="Porosité">
+            <img src="https://www.zeus.go.kr/storage/images/equip/photo/201006/.thumb/20100616160328.jpg" alt="Porosité">
             <h3>🕳️ Porosité</h3>
             <p>Distribution de taille des pores par BJH, DFT et t-plot.</p>
             <p><strong>Applications :</strong> Zéolithes, MOFs, matériaux mésoporeux</p>
@@ -42,7 +42,7 @@ def show_analyses():
     with col3:
         st.markdown("""
         <div class="analysis-card">
-            <img src="https://via.placeholder.com/300x180?text=Isothermes" alt="Isothermes">
+            <img src="https://commons.wikimedia.org/wiki/File:Isotherms_types.jpg#/media/Fichier:Isotherms_types.jpg" alt="Isothermes">
             <h3>📊 Isothermes</h3>
             <p>Isothermes complètes d'adsorption/désorption N₂ et CO₂.</p>
             <p><strong>Applications :</strong> Caractérisation complète de la texture</p>
