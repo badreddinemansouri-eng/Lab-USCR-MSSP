@@ -9,6 +9,32 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 
+# ---------- Nettoyage du texte pour éviter les erreurs d'encodage ----------
+def clean_text(text):
+    """Remplace les caractères Unicode problématiques par leurs équivalents ASCII."""
+    if text is None:
+        return ""
+    replacements = {
+        "\u2019": "'",   # apostrophe courbe
+        "\u2018": "'",   # guillemet simple ouvrant
+        "\u201c": '"',   # guillemet double ouvrant
+        "\u201d": '"',   # guillemet double fermant
+        "\u2013": "-",   # tiret demi-cadratin
+        "\u2014": "--",  # tiret cadratin
+        "\u00e9": "e",   # é -> e (perte d'accent, mais évite l'erreur)
+        "\u00e8": "e",
+        "\u00ea": "e",
+        "\u00e2": "a",
+        "\u00f4": "o",
+        "\u00ee": "i",
+        "\u00fb": "u",
+        "\u00e0": "a",
+        "\u00e7": "c",
+    }
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+    return text
+
 # ---------- Supabase ----------
 def init_supabase() -> Client:
     url = st.secrets["SUPABASE_URL"]
@@ -59,17 +85,17 @@ def generate_pdf(data: dict) -> bytes:
     pdf.rect(10, 8, 30, 30, 'F')
     pdf.set_xy(10, 15)
     pdf.set_font("Arial", 'B', 8)
-    pdf.cell(30, 6, "Logo", align='C', border=0)
+    pdf.cell(30, 6, clean_text("Logo"), align='C', border=0)
     # Center placeholder
     pdf.set_fill_color(200, 200, 200)
     pdf.rect(90, 8, 30, 30, 'F')
     pdf.set_xy(90, 15)
-    pdf.cell(30, 6, "Logo", align='C')
+    pdf.cell(30, 6, clean_text("Logo"), align='C')
     # Right placeholder
     pdf.set_fill_color(200, 200, 200)
     pdf.rect(170, 8, 30, 30, 'F')
     pdf.set_xy(170, 15)
-    pdf.cell(30, 6, "Logo", align='C')
+    pdf.cell(30, 6, clean_text("Logo"), align='C')
 
     # Reset font for the rest
     pdf.set_font("Arial", size=10)
@@ -77,73 +103,73 @@ def generate_pdf(data: dict) -> bytes:
     # ----- Title below logos -----
     pdf.set_y(40)  # move down below logos
     pdf.set_font("Arial", 'B', 14)
-    pdf.cell(0, 10, txt="Demande d’une mesure de la surface spécifique et de la porosité", ln=True, align='C')
+    pdf.cell(0, 10, txt=clean_text("Demande d'une mesure de la surface specifique et de la porosite"), ln=True, align='C')
     pdf.ln(5)
 
     # ----- Researcher information (two‑column layout) -----
     line_height = 6
 
     # Row1: Nom et prénom du demandeur
-    pdf.cell(50, line_height, "Nom et prénom du demandeur :", 0, 0)
-    pdf.cell(70, line_height, data.get('researcher_name', '__________________'), 0, 0)
-    pdf.cell(30, line_height, "Tél :", 0, 0)
-    pdf.cell(0, line_height, data.get('researcher_phone', '__________________'), 0, 1)
+    pdf.cell(50, line_height, clean_text("Nom et prénom du demandeur :"), 0, 0)
+    pdf.cell(70, line_height, clean_text(data.get('researcher_name', '__________________')), 0, 0)
+    pdf.cell(30, line_height, clean_text("Tél :"), 0, 0)
+    pdf.cell(0, line_height, clean_text(data.get('researcher_phone', '__________________')), 0, 1)
 
     # Row2: Email / Qualité
-    pdf.cell(50, line_height, "Email :", 0, 0)
-    pdf.cell(70, line_height, data.get('researcher_email', '__________________'), 0, 0)
-    pdf.cell(30, line_height, "Qualité :", 0, 0)
-    pdf.cell(0, line_height, data.get('qualification', '__________________'), 0, 1)
+    pdf.cell(50, line_height, clean_text("Email :"), 0, 0)
+    pdf.cell(70, line_height, clean_text(data.get('researcher_email', '__________________')), 0, 0)
+    pdf.cell(30, line_height, clean_text("Qualité :"), 0, 0)
+    pdf.cell(0, line_height, clean_text(data.get('qualification', '__________________')), 0, 1)
 
     # Row3: Organisme
-    pdf.cell(50, line_height, "Organisme :", 0, 0)
-    pdf.cell(0, line_height, data.get('organisation', '__________________'), 0, 1)
+    pdf.cell(50, line_height, clean_text("Organisme :"), 0, 0)
+    pdf.cell(0, line_height, clean_text(data.get('organisation', '__________________')), 0, 1)
 
     # Row4: Diplôme en cours
-    pdf.cell(50, line_height, "Diplôme en cours :", 0, 0)
-    pdf.cell(0, line_height, data.get('diploma', '__________________'), 0, 1)
+    pdf.cell(50, line_height, clean_text("Diplôme en cours :"), 0, 0)
+    pdf.cell(0, line_height, clean_text(data.get('diploma', '__________________')), 0, 1)
 
     # Row5: Nom et prénom de l’encadrant
-    pdf.cell(50, line_height, "Nom et prénom de l’encadrant :", 0, 0)
-    pdf.cell(0, line_height, data.get('supervisor_name', '__________________'), 0, 1)
+    pdf.cell(50, line_height, clean_text("Nom et prénom de l'encadrant :"), 0, 0)
+    pdf.cell(0, line_height, clean_text(data.get('supervisor_name', '__________________')), 0, 1)
 
     # Row6: Laboratoire/Unité de Recherche/Service
-    pdf.cell(50, line_height, "Laboratoire/Unité de Recherche/Service (Nom & Code) :", 0, 0)
-    pdf.cell(0, line_height, data.get('lab_unit', '__________________'), 0, 1)
+    pdf.cell(50, line_height, clean_text("Laboratoire/Unité de Recherche/Service (Nom & Code) :"), 0, 0)
+    pdf.cell(0, line_height, clean_text(data.get('lab_unit', '__________________')), 0, 1)
 
     pdf.ln(5)
 
     # ----- Samples table (max 4) -----
     pdf.set_font("Arial", 'B', 10)
-    pdf.cell(0, line_height, "Nombre d’échantillons (max 4)", ln=True)
+    pdf.cell(0, line_height, clean_text("Nombre d'échantillons (max 4)"), ln=True)
     pdf.set_font("Arial", size=9)
 
     # Table header with temperature column
     col_widths = [40, 60, 40]  # Name, Nature, Treatment Temp
-    pdf.cell(col_widths[0], line_height, "Nom (max 8 car.)", 1, 0, 'C')
-    pdf.cell(col_widths[1], line_height, "Nature de l’échantillon", 1, 0, 'C')
-    pdf.cell(col_widths[2], line_height, "Traitement (°C)", 1, 1, 'C')
+    pdf.cell(col_widths[0], line_height, clean_text("Nom (max 8 car.)"), 1, 0, 'C')
+    pdf.cell(col_widths[1], line_height, clean_text("Nature de l'échantillon"), 1, 0, 'C')
+    pdf.cell(col_widths[2], line_height, clean_text("Traitement (°C)"), 1, 1, 'C')
 
     samples = data.get('samples', [])
     for i in range(4):  # Always show 4 rows
         sample = samples[i] if i < len(samples) else {}
-        pdf.cell(col_widths[0], line_height, sample.get('name', '')[:8], 1)
-        pdf.cell(col_widths[1], line_height, sample.get('nature', ''), 1)
-        pdf.cell(col_widths[2], line_height, sample.get('temp', ''), 1, 1)
+        pdf.cell(col_widths[0], line_height, clean_text(sample.get('name', '')[:8]), 1)
+        pdf.cell(col_widths[1], line_height, clean_text(sample.get('nature', '')), 1)
+        pdf.cell(col_widths[2], line_height, clean_text(sample.get('temp', '')), 1, 1)
 
     pdf.ln(5)
 
     # ----- Treatment section -----
     pdf.set_font("Arial", 'B', 10)
-    pdf.cell(0, line_height, "Traitement de l’échantillon :", ln=True)
+    pdf.cell(0, line_height, clean_text("Traitement de l'échantillon :"), ln=True)
     pdf.set_font("Arial", size=9)
     ambiance = "☒" if data.get('treatment_ambiance') else "☐"
-    pdf.cell(30, line_height, f"{ambiance} Ambiance", 0, 0)
-    pdf.cell(20, line_height, "Autre ☐", 0, 0)
-    pdf.cell(15, line_height, "T =", 0, 0)
-    pdf.cell(20, line_height, data.get('treatment_temperature', '_____ °C'), 0, 1)
+    pdf.cell(30, line_height, clean_text(f"{ambiance} Ambiance"), 0, 0)
+    pdf.cell(20, line_height, clean_text("Autre ☐"), 0, 0)
+    pdf.cell(15, line_height, clean_text("T ="), 0, 0)
+    pdf.cell(20, line_height, clean_text(data.get('treatment_temperature', '_____ °C')), 0, 1)
 
-    pdf.cell(0, line_height, "Votre échantillon est stable jusqu’à la température : T = __________ °C", ln=True)
+    pdf.cell(0, line_height, clean_text("Votre échantillon est stable jusqu'à la température : T = __________ °C"), ln=True)
     pdf.ln(5)
 
     # ----- Analysis types and signature (two columns) -----
@@ -151,7 +177,7 @@ def generate_pdf(data: dict) -> bytes:
 
     # Left column: analysis checkboxes
     pdf.set_font("Arial", 'B', 10)
-    pdf.cell(0, line_height, "Types d’analyses demandées :", ln=True)
+    pdf.cell(0, line_height, clean_text("Types d'analyses demandées :"), ln=True)
     pdf.set_font("Arial", size=9)
 
     analysis_list = ["S BET", "Porosité", "t-plot", "BJH-des", "Isothermes"]
@@ -159,14 +185,14 @@ def generate_pdf(data: dict) -> bytes:
 
     for analysis in analysis_list:
         checked = "☒" if analysis in selected else "☐"
-        pdf.cell(40, line_height, f"{checked} {analysis}", 0, 1)
+        pdf.cell(40, line_height, clean_text(f"{checked} {analysis}"), 0, 1)
 
     # Right column: signature block
     pdf.set_xy(120, start_y)  # move to right side
     pdf.set_font("Arial", 'B', 9)
-    pdf.multi_cell(70, line_height, "Signature & cachet de l’Encadrant / du Directeur du Laboratoire (Obligatoire) :")
+    pdf.multi_cell(70, line_height, clean_text("Signature & cachet de l'Encadrant / du Directeur du Laboratoire (Obligatoire) :"))
     pdf.set_xy(120, pdf.get_y())
-    pdf.cell(70, line_height, "......................................", ln=True)
+    pdf.cell(70, line_height, clean_text("......................................"), ln=True)
 
     # Move below both columns
     pdf.set_y(max(pdf.get_y(), start_y + len(analysis_list)*line_height + 10))
@@ -174,14 +200,14 @@ def generate_pdf(data: dict) -> bytes:
     # ----- Avis du responsable -----
     pdf.ln(5)
     pdf.set_font("Arial", size=10)
-    pdf.cell(0, line_height, "Avis du responsable des équipements : L. BEN HAMMOUDA", ln=True)
+    pdf.cell(0, line_height, clean_text("Avis du responsable des équipements : L. BEN HAMMOUDA"), ln=True)
     pdf.ln(5)
 
     # ----- Date and reference -----
-    pdf.cell(30, line_height, "Date de la demande :", 0, 0)
-    pdf.cell(50, line_height, data.get('date_demande', datetime.now().strftime("%d/%m/%Y")), 0, 0)
-    pdf.cell(40, line_height, "Références de la Demande :", 0, 0)
-    pdf.cell(0, line_height, data.get('request_id', 'MSSP_2025'), 0, 1)
+    pdf.cell(30, line_height, clean_text("Date de la demande :"), 0, 0)
+    pdf.cell(50, line_height, clean_text(data.get('date_demande', datetime.now().strftime("%d/%m/%Y"))), 0, 0)
+    pdf.cell(40, line_height, clean_text("Références de la Demande :"), 0, 0)
+    pdf.cell(0, line_height, clean_text(data.get('request_id', 'MSSP_2025')), 0, 1)
 
     return pdf.output(dest='S').encode('latin1')
 
