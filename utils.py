@@ -77,24 +77,24 @@ def generate_pdf(data: dict) -> bytes:
     pdf.set_font("Arial", size=10)
 
     # ----- Trois logos (placeholders) -----
-    pdf.set_fill_color(200, 200, 200)
-    pdf.image("https://imgur.com/MJxfUx7.jpeg", x=10, y=8, w=30)
-    pdf.set_xy(10, 15)
-    pdf.set_font("Arial", 'B', 8)
-    pdf.cell(30, 6, clean_text("Logo"), align='C', border=0)
-
-    pdf.set_fill_color(200, 200, 200)
-    pdf.image("https://imgur.com/zntcsDm.png", x=90, y=8, w=30)
-    pdf.set_xy(90, 15)
-    pdf.cell(30, 6, clean_text("Logo"), align='C')
-
-    pdf.set_fill_color(200, 200, 200)
-    pdf.image("https://imgur.com/b4yppi3.png", x=170, y=8, w=30)
-    pdf.set_xy(170, 15)
-    pdf.cell(30, 6, clean_text("Logo"), align='C')
-
-    pdf.set_font("Arial", size=10)
-
+    logo_paths = [
+        "logos/logo-gauche.jpg",
+        "logos/logo-centre.png",
+        "logos/logo-droit.png"
+    ]
+    positions = [(10, 8, 30), (90, 8, 30), (170, 8, 30)]
+    
+    for i, path in enumerate(logo_paths):
+        if os.path.exists(path):
+            pdf.image(path, x=positions[i][0], y=positions[i][1], w=positions[i][2])
+        else:
+            # Fallback rectangle gris
+            pdf.set_fill_color(200, 200, 200)
+            pdf.rect(positions[i][0], positions[i][1], positions[i][2], 30, 'F')
+            pdf.set_xy(positions[i][0], positions[i][1] + 7)
+            pdf.set_font("Arial", 'B', 8)
+            pdf.cell(positions[i][2], 6, "Logo", align='C', border=0)
+            pdf.set_font("Arial", size=10)
     # ----- Titre -----
     pdf.set_y(40)
     pdf.set_font("Arial", 'B', 14)
