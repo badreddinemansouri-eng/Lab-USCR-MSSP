@@ -115,51 +115,74 @@ def generate_pdf(data: dict) -> bytes:
     pdf.cell(0, 10, txt=clean_text("Demande d'une mesure de la surface specifique et de la porosite"), ln=True, align='C')
     pdf.ln(5)
 
-    # ----- Informations chercheur (avec gestion des longs textes) -----
+    # ----- Informations chercheur (avec colonnes fixes) -----
     pdf.set_font("Arial", size=9)
     line_height = 6
+    left_margin = 10
+    label_width = 55
+    value_width = 130  # largeur restante (210 - left_margin*2 - label_width ≈ 135, on prend 130 pour sécurité)
+    value_x = left_margin + label_width + 2  # petit espace après le label
 
-    # Ligne 1 : Nom + Tél
-    pdf.cell(55, line_height, clean_text("Nom et prénom du demandeur :"), 0, 0)
-    pdf.cell(70, line_height, clean_text(data.get('researcher_name', '__________________')), 0, 0)
+    def write_field(label, value):
+        """Écrit un champ avec label et valeur, passe à la ligne suivante."""
+        pdf.set_x(left_margin)
+        pdf.cell(label_width, line_height, clean_text(label + " :"), 0, 0)
+        pdf.set_x(value_x)
+        # Utiliser multi_cell pour permettre le retour à la ligne automatique
+        pdf.multi_cell(value_width, line_height, clean_text(value), 0, 'L')
+        # Après multi_cell, le curseur est à la fin de la zone de valeur, on le remet à la ligne suivante
+        pdf.ln(0)  # déjà sauté par multi_cell, mais pour être sûr on ne fait rien
+
+    # Ligne 1 : Nom + Tél (sur une seule ligne car Tél est court)
+    pdf.set_x(left_margin)
+    pdf.cell(label_width, line_height, clean_text("Nom et prénom du demandeur :"), 0, 0)
+    pdf.set_x(value_x)
+    pdf.cell(value_width - 40, line_height, clean_text(data.get('researcher_name', '__________________')), 0, 0)  # on garde de la place pour Tél
     pdf.cell(20, line_height, clean_text("Tél :"), 0, 0)
-    pdf.cell(0, line_height, clean_text(data.get('researcher_phone', '__________________')), 0, 1)
+    pdf.cell(30, line_height, clean_text(data.get('researcher_phone', '__________________')), 0, 1)
 
-    # Ligne 2 : Email / Qualité
-    pdf.cell(55, line_height, clean_text("Email :"), 0, 0)
-    pdf.cell(70, line_height, clean_text(data.get('researcher_email', '__________________')), 0, 0)
+    # Ligne 2 : Email + Qualité (similaire)
+    pdf.set_x(left_margin)
+    pdf.cell(label_width, line_height, clean_text("Email :"), 0, 0)
+    pdf.set_x(value_x)
+    pdf.cell(value_width - 40, line_height, clean_text(data.get('researcher_email', '__________________')), 0, 0)
     pdf.cell(20, line_height, clean_text("Qualité :"), 0, 0)
-    pdf.cell(0, line_height, clean_text(data.get('qualification', '__________________')), 0, 1)
+    pdf.cell(30, line_height, clean_text(data.get('qualification', '__________________')), 0, 1)
 
-    # Ligne 3 : Organisme (multi_cell pour les longs textes)
-    pdf.cell(55, line_height, clean_text("Organisme :"), 0, 0)
-    x_org = pdf.get_x()
-    y_org = pdf.get_y()
-    pdf.multi_cell(0, line_height, clean_text(data.get('organisation', '__________________')), 0, 'L')
-    # multi_cell a déjà sauté à la ligne suivante
+    # Ligne 3 : Organisme (long)
+    pdf.set_x(left_margin)
+    pdf.cell(label_width, line_height, clean_text("Organisme :"), 0, 0)
+    pdf.set_x(value_x)
+    pdf.multi_cell(value_width, line_height, clean_text(data.get('organisation', '__________________')), 0, 'L')
 
     # Ligne 4 : Diplôme
-    pdf.set_font("Arial", size=9)
-    pdf.cell(55, line_height, clean_text("Diplôme en cours :"), 0, 0)
-    pdf.multi_cell(0, line_height, clean_text(data.get('diploma', '__________________')), 0, 'L')
+    pdf.set_x(left_margin)
+    pdf.cell(label_width, line_height, clean_text("Diplôme en cours :"), 0, 0)
+    pdf.set_x(value_x)
+    pdf.multi_cell(value_width, line_height, clean_text(data.get('diploma', '__________________')), 0, 'L')
 
     # Ligne 5 : Encadrant
-    pdf.set_font("Arial", size=9)
-    pdf.cell(55, line_height, clean_text("Nom et prénom de l'encadrant :"), 0, 0)
-    pdf.multi_cell(0, line_height, clean_text(data.get('supervisor_name', '__________________')), 0, 'L')
+    pdf.set_x(left_margin)
+    pdf.cell(label_width, line_height, clean_text("Nom et prénom de l'encadrant :"), 0, 0)
+    pdf.set_x(value_x)
+    pdf.multi_cell(value_width, line_height, clean_text(data.get('supervisor_name', '__________________')), 0, 'L')
 
     # Ligne 6 : Directeur de laboratoire (NOUVEAU)
-    pdf.set_font("Arial", size=9)
-    pdf.cell(55, line_height, clean_text("Nom et prénom du Directeur de laboratoire :"), 0, 0)
-    pdf.multi_cell(0, line_height, clean_text(data.get('director_name', '__________________')), 0, 'L')
+    pdf.set_x(left_margin)
+    pdf.cell(label_width, line_height, clean_text("Nom et prénom du Directeur de laboratoire :"), 0, 0)
+    pdf.set_x(value_x)
+    pdf.multi_cell(value_width, line_height, clean_text(data.get('director_name', '__________________')), 0, 'L')
 
-    # Ligne 7 : Laboratoire/Unité (libellé long, police plus petite)
+    # Ligne 7 : Laboratoire/Unité (long)
+    pdf.set_x(left_margin)
+    # On peut réduire la police pour que le libellé tienne mieux
     pdf.set_font("Arial", size=8)
-    pdf.cell(65, line_height, clean_text("Laboratoire/Unité de Recherche/Service (Nom & Code) :"), 0, 0)
+    pdf.cell(label_width, line_height, clean_text("Laboratoire/Unité de Recherche/Service (Nom & Code) :"), 0, 0)
     pdf.set_font("Arial", size=9)
-    pdf.multi_cell(0, line_height, clean_text(data.get('lab_unit', '__________________')), 0, 'L')
+    pdf.set_x(value_x)
+    pdf.multi_cell(value_width, line_height, clean_text(data.get('lab_unit', '__________________')), 0, 'L')
 
-    pdf.ln(5)
+    pdf.ln(3)
 
     # ----- Tableau des échantillons (4 lignes) -----
     pdf.set_font("Arial", 'B', 10)
@@ -215,7 +238,7 @@ def generate_pdf(data: dict) -> bytes:
     pdf.set_xy(120, pdf.get_y())
     pdf.cell(70, line_height, clean_text("......................................"), ln=True)
 
-    # Ajustement vertical
+    # Ajustement vertical pour que les deux colonnes soient alignées
     pdf.set_y(max(pdf.get_y(), start_y + len(analysis_list)*line_height + 10))
 
     # ----- Avis du responsable -----
