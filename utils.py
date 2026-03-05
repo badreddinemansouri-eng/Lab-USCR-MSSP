@@ -53,25 +53,34 @@ def generate_pdf(data: dict) -> bytes:
     pdf.add_page()
     pdf.set_font("Arial", size=10)
 
-    # ----- Three logos at the top (left, center, right) -----
-    # Replace these URLs with your actual logos
-    logo_left = "https://via.placeholder.com/80x80?text=Logo+Gauche"
-    logo_center = "https://via.placeholder.com/80x80?text=Logo+Centre"
-    logo_right = "https://via.placeholder.com/80x80?text=Logo+Droit"
+    # ----- Three placeholder rectangles at the top (left, center, right) -----
+    pdf.set_fill_color(200, 200, 200)  # light gray
+    # Left placeholder
+    pdf.rect(10, 8, 30, 30, 'F')
+    pdf.set_xy(10, 15)
+    pdf.set_font("Arial", 'B', 8)
+    pdf.cell(30, 6, "Logo", align='C', border=0)
+    # Center placeholder
+    pdf.set_fill_color(200, 200, 200)
+    pdf.rect(90, 8, 30, 30, 'F')
+    pdf.set_xy(90, 15)
+    pdf.cell(30, 6, "Logo", align='C')
+    # Right placeholder
+    pdf.set_fill_color(200, 200, 200)
+    pdf.rect(170, 8, 30, 30, 'F')
+    pdf.set_xy(170, 15)
+    pdf.cell(30, 6, "Logo", align='C')
 
-    # Position logos
-    pdf.image(logo_left, x=10, y=8, w=30)
-    pdf.image(logo_center, x=90, y=8, w=30)  # adjust x to center
-    pdf.image(logo_right, x=170, y=8, w=30)
+    # Reset font for the rest
+    pdf.set_font("Arial", size=10)
 
     # ----- Title below logos -----
-    pdf.set_y(30)  # move down below logos
+    pdf.set_y(40)  # move down below logos
     pdf.set_font("Arial", 'B', 14)
     pdf.cell(0, 10, txt="Demande d’une mesure de la surface spécifique et de la porosité", ln=True, align='C')
     pdf.ln(5)
 
     # ----- Researcher information (two‑column layout) -----
-    pdf.set_font("Arial", size=10)
     line_height = 6
 
     # Row1: Nom et prénom du demandeur
