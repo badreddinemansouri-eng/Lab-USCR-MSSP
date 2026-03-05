@@ -102,13 +102,13 @@ def generate_pdf(data: dict) -> bytes:
     for i, nom in enumerate(noms_fichiers):
         # Chemins possibles
         chemins = [
-            os.path.join(BASE_DIR, "logos", nom),
+            os.path.join(BASE_DIR, "logo", nom),
             os.path.join(BASE_DIR, nom),
-            os.path.join(os.getcwd(), "logos", nom),
+            os.path.join(os.getcwd(), "logo", nom),
             os.path.join(os.getcwd(), nom),
-            "./logos/" + nom,
+            "./logo/" + nom,
             "./" + nom,
-            "logos/" + nom,
+            "logo/" + nom,
             nom
         ]
         trouve = False
