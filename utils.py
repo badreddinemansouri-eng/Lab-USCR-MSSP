@@ -210,7 +210,8 @@ def generate_pdf(data: dict) -> bytes:
     pdf.cell(40, line_height, clean_text("Références de la Demande :"), 0, 0)
     pdf.cell(0, line_height, clean_text(data.get('request_id', 'MSSP_2025')), 0, 1)
 
-    return pdf.output(dest='S').encode('latin1')
+    # Retourner directement le bytearray (pas d'encode)
+    return pdf.output(dest='S')
 
 # ---------- Email Functions ----------
 def send_email(recipient: str, request_id: str, pdf_bytes: bytes):
