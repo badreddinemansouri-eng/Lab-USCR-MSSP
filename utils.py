@@ -8,6 +8,9 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
+import os
+# Chemin absolu du dossier contenant utils.py
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # ---------- Nettoyage du texte ----------
 def clean_text(text):
@@ -78,9 +81,9 @@ def generate_pdf(data: dict) -> bytes:
 
     # ----- Trois logos (placeholders) -----
     logo_paths = [
-        "logos/logo-gauche.jpg",
-        "logos/logo-centre.png",
-        "logos/logo-droit.png"
+        os.path.join(BASE_DIR, "logos", "logo-gauche.jpg"),
+        os.path.join(BASE_DIR, "logos", "logo-centre.png"),
+        os.path.join(BASE_DIR, "logos", "logo-droit.png")
     ]
     positions = [(10, 8, 30), (90, 8, 30), (170, 8, 30)]
     
