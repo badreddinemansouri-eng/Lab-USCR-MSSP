@@ -152,22 +152,28 @@ def generate_pdf(data: dict) -> bytes:
 
     pdf.ln(3)
 
-    # ----- Tableau des échantillons -----
+    # ----- Tableau des échantillons centré -----
+    table_width = 40 + 60 + 40  # 140 mm
+    table_x = (210 - table_width) / 2  # centré sur page A4
+
+    pdf.set_x(table_x)
     pdf.set_font("Arial", 'B', 10)
-    pdf.cell(0, line_height, clean_text("Nombre d'échantillons (max 4)"), ln=True)
+    pdf.cell(table_width, line_height, clean_text("Nombre d'échantillons (max 4)"), ln=True, align='C')
     pdf.set_font("Arial", size=9)
 
-    col_widths = [40, 60, 40]
-    pdf.cell(col_widths[0], line_height, clean_text("Nom (max 8 car.)"), 1, 0, 'C')
-    pdf.cell(col_widths[1], line_height, clean_text("Nature de l'échantillon"), 1, 0, 'C')
-    pdf.cell(col_widths[2], line_height, clean_text("Traitement (°C)"), 1, 1, 'C')
+    # En-têtes
+    pdf.set_x(table_x)
+    pdf.cell(40, line_height, clean_text("Nom (max 8 car.)"), 1, 0, 'C')
+    pdf.cell(60, line_height, clean_text("Nature de l'échantillon"), 1, 0, 'C')
+    pdf.cell(40, line_height, clean_text("Traitement (°C)"), 1, 1, 'C')
 
     samples = data.get('samples', [])
     for i in range(4):
         sample = samples[i] if i < len(samples) else {}
-        pdf.cell(col_widths[0], line_height, clean_text(sample.get('name', '')[:8]), 1)
-        pdf.cell(col_widths[1], line_height, clean_text(sample.get('nature', '')), 1)
-        pdf.cell(col_widths[2], line_height, clean_text(sample.get('temp', '')), 1, 1)
+        pdf.set_x(table_x)
+        pdf.cell(40, line_height, clean_text(sample.get('name', '')[:8]), 1)
+        pdf.cell(60, line_height, clean_text(sample.get('nature', '')), 1)
+        pdf.cell(40, line_height, clean_text(sample.get('temp', '')), 1, 1)
 
     pdf.ln(5)
 
@@ -241,7 +247,6 @@ def generate_pdf(data: dict) -> bytes:
     pdf.ln(5)
 
     return pdf.output(dest='S')
-
 # ---------- Email Functions ----------
 def send_email(recipient: str, request_id: str, pdf_bytes: bytes):
     sender = st.secrets["EMAIL_USER"]
