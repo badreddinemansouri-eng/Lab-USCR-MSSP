@@ -4,6 +4,9 @@ from analyses import show_analyses
 from request import show_request
 from resources import show_resources
 from contact import show_contact
+from admin import show_admin
+
+# Ces imports sont utilisés par analyses.py via st.session_state
 from bet import show_bet
 from porosite import show_porosite
 from isothermes import show_isothermes
@@ -12,14 +15,14 @@ st.set_page_config(
     page_title="USR Mesure de Surface Spécifique et Porosité",
     page_icon="🧪",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"  # ← sidebar désactivée
 )
 
-# ---------- Mode debug (cacher les erreurs aux utilisateurs) ----------
+# Mode debug (cacher les erreurs aux utilisateurs)
 if not st.secrets.get("debug", False):
     st.set_option('client.showErrorDetails', False)
 
-# ---------- CSS global avec animations et responsive ----------
+# CSS global (identique, avec styles pour les onglets)
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -29,7 +32,6 @@ st.markdown("""
         box-sizing: border-box;
     }
     
-    /* Animations */
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
@@ -103,7 +105,6 @@ st.markdown("""
         box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
     }
     
-    /* Responsive */
     @media (max-width: 768px) {
         .main-header h1 { font-size: 1.8rem; }
         .main-header h2 { font-size: 1.2rem; }
@@ -121,10 +122,32 @@ st.markdown("""
         animation: fadeIn 0.8s ease;
     }
     
-    /* Sidebar */
-    .css-1d391kg { background-color: #f8f9fa; }
+    /* Style des onglets */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 2rem;
+        justify-content: center;
+        background-color: #f8f9fa;
+        padding: 0.5rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+    }
     
-    h1, h2, h3 { color: #2c3e50; font-weight: 600; }
+    .stTabs [data-baseweb="tab"] {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: #2c3e50;
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background-color: #667eea;
+        color: white !important;
+        border-radius: 5px;
+    }
+    
+    h1, h2, h3 {
+        color: #2c3e50;
+        font-weight: 600;
+    }
     
     .stApp { background-color: #f5f5f5; }
     .main .block-container {
@@ -132,48 +155,24 @@ st.markdown("""
         border-radius: 10px;
         padding: 2rem;
         box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        max-width: 1200px;
+        margin: 0 auto;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# ---------- Navigation ----------
-with st.sidebar:
-    st.image("https://via.placeholder.com/200x100?text=USR+Logo", use_column_width=True)
-    st.markdown("## **Unité de Service**")
-    st.markdown("### Mesure de Surface Spécifique")
-    st.markdown("---")
-    
-    st.markdown("### 📋 Navigation")
-    page = st.radio(
-        "Aller à",
-        ["🏠 Accueil", "🔬 Analyses", "📝 Formulaire de Demande", "📚 Ressources", "📞 Contact", "🔐 Admin"],
-        label_visibility="collapsed"
-    )
-    
-    st.markdown("---")
-    st.markdown("### 🕒 Horaires")
-    st.markdown("Lundi - Vendredi: 8h30 - 17h00")
-    st.markdown("Samedi: 9h00 - 12h00")
-    
-    st.markdown("### 📍 Adresse")
-    st.markdown("Université de Tunis El Manar")
-    st.markdown("Campus Universitaire Farhat Hached")
-    st.markdown("1068 Tunis, Tunisie")
-    
-    st.markdown("---")
-    st.markdown("**Version 3.0** | © 2026")
+# Navigation par onglets
+tabs = st.tabs(["🏠 Accueil", "🔬 Analyses", "📝 Demande", "📚 Ressources", "📞 Contact", "🔐 Admin"])
 
-# Routage
-if page == "🏠 Accueil":
+with tabs[0]:
     show_home()
-elif page == "🔬 Analyses":
+with tabs[1]:
     show_analyses()
-elif page == "📝 Formulaire de Demande":
+with tabs[2]:
     show_request()
-elif page == "📚 Ressources":
+with tabs[3]:
     show_resources()
-elif page == "📞 Contact":
+with tabs[4]:
     show_contact()
-elif page == "🔐 Admin":
-    from admin import show_admin
+with tabs[5]:
     show_admin()
