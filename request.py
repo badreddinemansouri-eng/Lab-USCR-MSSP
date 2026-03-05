@@ -22,6 +22,7 @@ def show_request():
             organisation = st.text_input("Organisme *", key="organisation")
             diploma = st.selectbox("Diplôme en cours", ["", "Habilitation", "Doctorat", "Maîtrise", "Autres"], key="diploma")
             supervisor_name = st.text_input("Nom et prénom de l’encadrant *", key="supervisor")
+            director_name = st.text_input("Nom et prénom du Directeur de laboratoire *", key="director")
             lab_unit = st.text_input("Laboratoire/Unité de Recherche/Service (Nom & Code) *", key="lab_unit")
 
         st.subheader("Échantillons (max 4)")
@@ -35,7 +36,7 @@ def show_request():
                 with colb:
                     nature = st.text_input(f"Nature", key=f"sample_nature_{i}")
                 with colc:
-                    temp = st.text_input(f"Traitement (°C)", key=f"sample_temp_{i}")
+                    temp = st.text_input(f"Traitement (°C) *", key=f"sample_temp_{i}")
                 if name or nature or temp:
                     samples.append({"name": name, "nature": nature, "temp": temp})
 
@@ -63,7 +64,7 @@ def show_request():
         submitted = st.form_submit_button("Soumettre la demande")
 
     if submitted:
-        required = [researcher_name, researcher_email, organisation, supervisor_name, lab_unit]
+        required = [researcher_name, researcher_email, organisation, director_name, lab_unit, temp]
         if not all(required):
             st.error("Veuillez remplir tous les champs obligatoires (*).")
             return
@@ -82,6 +83,7 @@ def show_request():
             "organisation": organisation,
             "diploma": diploma,
             "supervisor_name": supervisor_name,
+            "director_name": director_name,
             "lab_unit": lab_unit,
             "samples": samples,
             "treatment_ambiance": treatment_ambiance,
