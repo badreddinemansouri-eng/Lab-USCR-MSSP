@@ -75,7 +75,7 @@ def show_home():
     
     with col_eq2:
         # Replace with your actual photo
-        st.image("https://via.placeholder.com/600x400?text=Micromeritics+ASAP+2020", 
+        st.image("https://micromeritrics.com.cn/wp-content/uploads/2024/01/ASAP-2020-plus-micromeritics.png", 
                 caption="Micromeritics ASAP 2020 - Analyseur de surface et porosité",
                 use_column_width=True)
     
