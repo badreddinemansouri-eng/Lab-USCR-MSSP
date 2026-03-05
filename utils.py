@@ -151,16 +151,16 @@ def generate_pdf(data: dict) -> bytes:
     pdf.set_font("Arial", 'B', 10)
     pdf.cell(label_width, line_height, clean_text("Nom et prénom du Directeur de laboratoire : "), 0, 0)
     pdf.set_font("Arial", '', 10)
-    pdf.set_x(value_x + 17)
-    pdf.multi_cell(value_width - 17, line_height, clean_text(data.get('director_name', '__________________')), 0, 'L')
+    pdf.set_x(value_x + 19)
+    pdf.multi_cell(value_width - 19, line_height, clean_text(data.get('director_name', '__________________')), 0, 'L')
 
     # ----- Champ Laboratoire (décalé de +15, label en gras) -----
     pdf.set_x(left_margin)
     pdf.set_font("Arial", 'B', 10)   # gras mais police réduite pour le label long
     pdf.cell(label_width, line_height, clean_text("Laboratoire/Unité de Recherche/Service (Nom & Code) : "), 0, 0)
     pdf.set_font("Arial", '', 10)    # retour à normal pour la valeur
-    pdf.set_x(value_x + 30)
-    pdf.multi_cell(value_width - 30, line_height, clean_text(data.get('lab_unit', '__________________')), 0, 'L')
+    pdf.set_x(value_x + 34)
+    pdf.multi_cell(value_width - 34, line_height, clean_text(data.get('lab_unit', '__________________')), 0, 'L')
 
     pdf.ln(3)
 
