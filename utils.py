@@ -102,7 +102,7 @@ def generate_pdf(data: dict) -> bytes:
     pdf.ln(5)
 
     # ----- Informations chercheur (marges normales A4) -----
-    pdf.set_font("Arial", size=9)
+    pdf.set_font("Arial", size=10)
     line_height = 6
     left_margin = 10
     label_width = 55
@@ -111,44 +111,56 @@ def generate_pdf(data: dict) -> bytes:
 
     def write_multiline(label, value):
         pdf.set_x(left_margin)
+        pdf.set_font("Arial", 'B', 10)          # label en gras
         pdf.cell(label_width, line_height, clean_text(label + " : "), 0, 0)
+        pdf.set_font("Arial", '', 10)            # valeur en normal
         pdf.set_x(value_x)
         pdf.multi_cell(value_width, line_height, clean_text(value), 0, 'L')
 
     # Ligne 1 : Nom + Tél
     pdf.set_x(left_margin)
+    pdf.set_font("Arial", 'B', 10)
     pdf.cell(label_width, line_height, clean_text("Nom et prénom du demandeur : "), 0, 0)
+    pdf.set_font("Arial", '', 10)
     pdf.set_x(value_x)
     pdf.cell(value_width - 50, line_height, clean_text(data.get('researcher_name', '__________________')), 0, 0)
+    pdf.set_font("Arial", 'B', 10)
     pdf.cell(20, line_height, clean_text("Tél : "), 0, 0)
+    pdf.set_font("Arial", '', 10)
     pdf.cell(30, line_height, clean_text(data.get('researcher_phone', '__________________')), 0, 1)
 
     # Ligne 2 : Email + Qualité
     pdf.set_x(left_margin)
+    pdf.set_font("Arial", 'B', 10)
     pdf.cell(label_width, line_height, clean_text("Email : "), 0, 0)
+    pdf.set_font("Arial", '', 10)
     pdf.set_x(value_x)
     pdf.cell(value_width - 50, line_height, clean_text(data.get('researcher_email', '__________________')), 0, 0)
+    pdf.set_font("Arial", 'B', 10)
     pdf.cell(20, line_height, clean_text("Qualité : "), 0, 0)
+    pdf.set_font("Arial", '', 10)
     pdf.cell(30, line_height, clean_text(data.get('qualification', '__________________')), 0, 1)
 
-    # Champs longs
+    # Champs longs (avec labels en gras grâce à write_multiline)
     write_multiline("Organisme", data.get('organisation', '__________________'))
     write_multiline("Diplôme en cours", data.get('diploma', '__________________'))
     write_multiline("Nom et prénom de l'encadrant", data.get('supervisor_name', '__________________'))
 
-    # ----- Champ Directeur (décalé de +15) -----
+    # ----- Champ Directeur (décalé de +15, label en gras) -----
     pdf.set_x(left_margin)
+    pdf.set_font("Arial", 'B', 10)
     pdf.cell(label_width, line_height, clean_text("Nom et prénom du Directeur de laboratoire : "), 0, 0)
-    pdf.set_x(value_x + 13)
-    pdf.multi_cell(value_width - 13, line_height, clean_text(data.get('director_name', '__________________')), 0, 'L')
-
-    # ----- Champ Laboratoire (décalé de +15) -----
-    pdf.set_x(left_margin)
-    pdf.set_font("Arial", size=8)
-    pdf.cell(label_width, line_height, clean_text("Laboratoire/Unité de Recherche/Service (Nom & Code) : "), 0, 0)
-    pdf.set_font("Arial", size=9)
+    pdf.set_font("Arial", '', 10)
     pdf.set_x(value_x + 15)
-    pdf.multi_cell(value_width - 15, line_height, clean_text(data.get('lab_unit', '__________________')), 0, 'L')
+    pdf.multi_cell(value_width - 15, line_height, clean_text(data.get('director_name', '__________________')), 0, 'L')
+
+    # ----- Champ Laboratoire (décalé de +15, label en gras) -----
+    pdf.set_x(left_margin)
+    pdf.set_font("Arial", 'B', 10)   # gras mais police réduite pour le label long
+    pdf.cell(label_width, line_height, clean_text("Laboratoire/Unité de Recherche/Service (Nom & Code) : "), 0, 0)
+    pdf.set_font("Arial", '', 10)    # retour à normal pour la valeur
+    pdf.set_x(value_x + 18)
+    pdf.multi_cell(value_width - 18, line_height, clean_text(data.get('lab_unit', '__________________')), 0, 'L')
 
     pdf.ln(3)
 
@@ -159,7 +171,7 @@ def generate_pdf(data: dict) -> bytes:
     pdf.set_x(table_x)
     pdf.set_font("Arial", 'B', 10)
     pdf.cell(table_width, line_height, clean_text("Nombre d'échantillons (max 4)"), ln=True, align='C')
-    pdf.set_font("Arial", size=9)
+    pdf.set_font("Arial", size=10)
 
     # En-têtes
     pdf.set_x(table_x)
@@ -180,7 +192,7 @@ def generate_pdf(data: dict) -> bytes:
     # ----- Traitement de l'échantillon -----
     pdf.set_font("Arial", 'B', 10)
     pdf.cell(0, line_height, clean_text("Traitement de l'échantillon :"), ln=True)
-    pdf.set_font("Arial", size=9)
+    pdf.set_font("Arial", size=10)
     ambiance = "[X]" if data.get('treatment_ambiance') else "[ ]"
     pdf.cell(30, line_height, clean_text(f"{ambiance} Ambiance"), 0, 0)
     pdf.cell(30, line_height, clean_text("Autre [ ]"), 0, 0)
@@ -196,7 +208,7 @@ def generate_pdf(data: dict) -> bytes:
     # Colonne gauche : analyses
     pdf.set_font("Arial", 'B', 10)
     pdf.cell(0, line_height, clean_text("Types d'analyses demandées :"), ln=True)
-    pdf.set_font("Arial", size=9)
+    pdf.set_font("Arial", size=10)
 
     analysis_list = ["S BET", "Porosité", "t-plot", "BJH-des", "Isothermes"]
     selected = data.get('analysis_types', [])
@@ -207,7 +219,7 @@ def generate_pdf(data: dict) -> bytes:
 
     # Colonne droite : signature
     pdf.set_xy(120, start_y)
-    pdf.set_font("Arial", 'B', 9)
+    pdf.set_font("Arial", 'B', 10)
     pdf.multi_cell(75, line_height, clean_text("Signature & cachet de l'Encadrant / du Directeur du Laboratoire (Obligatoire) :"))
     pdf.set_xy(120, pdf.get_y())
     pdf.cell(75, line_height, clean_text("......................................"), ln=True)
@@ -223,14 +235,14 @@ def generate_pdf(data: dict) -> bytes:
     # Ligne de pointillés sous l'avis
     pdf.set_x(left_margin)
     pdf.cell(0, line_height, clean_text("........................................"), ln=True)
-    pdf.ln(3)  # Petit espace après
+    pdf.ln(3)
 
     # ----- Instructions spéciales / remarques (3 lignes) -----
-    pdf.set_font("Arial", size=9)
+    pdf.set_font("Arial", size=8)
     remarques = [
-        "Masse de l'échantillon entre 120 et 150 mg.",
-        "formulaire doit être dument rempli et signé.",
-        "Veuillez récupérer vos échantillons, sinon ils seront jetés après une semaine."
+        "*Masse de l'échantillon entre 120 et 150 mg.",
+        "*formulaire doit être dument rempli et signé.",
+        "*Veuillez récupérer vos échantillons, sinon ils seront jetés après une semaine."
     ]
     for ligne in remarques:
         pdf.cell(0, line_height, clean_text(ligne), ln=True)
