@@ -1,4 +1,6 @@
-streamlit
+streamlit>=1.25.0
 supabase
 fpdf2>=2.7.0
 python-dotenv
+folium
+streamlit-folium
