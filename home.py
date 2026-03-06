@@ -1,5 +1,6 @@
 import streamlit as st
 from utils_i18n import get_text
+from utils import get_all_news
 
 def show_home():
     st.markdown("""
@@ -42,7 +43,35 @@ def show_home():
             <span style="color:var(--text-secondary);">Directeur de l'unité</span></p>
         """, unsafe_allow_html=True)
         
-        # Bouton fonctionnel pour aller à la page Demande
+        # Bouton "Faire une demande" attractif (avec animation CSS et couleur)
+        st.markdown("""
+        <style>
+            @keyframes pulse {
+                0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
+                70% { transform: scale(1.05); box-shadow: 0 0 20px 10px rgba(255, 107, 107, 0.3); }
+                100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
+            }
+            .request-button {
+                animation: pulse 2s infinite;
+                background: linear-gradient(135deg, #ff6b6b, #ee5a24) !important;
+                border: none;
+                color: white;
+                font-weight: bold;
+                font-size: 1.2rem;
+                padding: 0.8rem 2rem;
+                border-radius: 50px;
+                width: 100%;
+                margin-top: 1rem;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+            .request-button:hover {
+                transform: scale(1.05);
+                box-shadow: 0 10px 30px rgba(255, 107, 107, 0.5);
+            }
+        </style>
+        """, unsafe_allow_html=True)
+        
         if st.button(get_text("make_request", st.session_state.lang) + " →", key="home_request_btn"):
             st.session_state.page = get_text("nav_request", st.session_state.lang)
             st.rerun()
@@ -132,25 +161,27 @@ def show_home():
     
     st.markdown("## 📰 Actualités")
     
-    col_news1, col_news2 = st.columns(2)
-    
-    with col_news1:
-        st.markdown("""
-        <div class="info-card">
-            <h4>📢 Nouvelle formation</h4>
-            <p><small>15 Mars 2026</small></p>
-            <p>Formation à l'utilisation de l'ASAP 2020 ouverte aux chercheurs et doctorants. Inscriptions jusqu'au 30 Mars.</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col_news2:
-        st.markdown("""
-        <div class="info-card">
-            <h4>🏆 Publication collaborative</h4>
-            <p><small>10 Février 2026</small></p>
-            <p>Notre unité a contribué à une étude sur les nouveaux MOFs pour le stockage de gaz, publiée dans Chemistry of Materials.</p>
-        </div>
-        """, unsafe_allow_html=True)
+    # Récupérer les actualités depuis Supabase
+    news_list = get_all_news()
+    if news_list:
+        # Afficher les actualités par paires
+        for i in range(0, len(news_list), 2):
+            cols = st.columns(2)
+            for j in range(2):
+                if i + j < len(news_list):
+                    news = news_list[i + j]
+                    with cols[j]:
+                        if news.get('image_url'):
+                            st.image(news['image_url'], use_column_width=True)
+                        st.markdown(f"""
+                        <div class="info-card">
+                            <h4>{news['title']}</h4>
+                            <p><small>{news['created_at'][:10]}</small></p>
+                            <p>{news['content']}</p>
+                        </div>
+                        """, unsafe_allow_html=True)
+    else:
+        st.info("Aucune actualité pour le moment.")
     
     st.markdown("---")
     
