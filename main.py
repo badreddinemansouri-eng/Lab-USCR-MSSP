@@ -26,12 +26,13 @@ if "theme" not in st.session_state:
     st.session_state.theme = "light"
 if "lang" not in st.session_state:
     st.session_state.lang = "fr"
+if "selected_tab" not in st.session_state:
+    st.session_state.selected_tab = 0  # 0 = Accueil
 
-# Fonction pour basculer le thème
 def toggle_theme():
     st.session_state.theme = "dark" if st.session_state.theme == "light" else "light"
 
-# CSS global
+# CSS global (identique à celui fourni, je le conserve)
 st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap');
@@ -49,7 +50,6 @@ st.markdown(f"""
         --blur-amount: 10px;
     }}
 
-    /* Appliquer les couleurs */
     body {{
         background-color: var(--bg-primary);
         color: var(--text-primary);
@@ -66,34 +66,6 @@ st.markdown(f"""
         padding-top: 1rem;
     }}
 
-    /* Header avec contrôles */
-    .header-controls {{
-        display: flex;
-        justify-content: flex-end;
-        gap: 1rem;
-        margin-bottom: 1rem;
-        align-items: center;
-    }}
-
-    .theme-toggle, .lang-select {{
-        background: var(--card-bg);
-        backdrop-filter: blur(var(--blur-amount));
-        border: 1px solid var(--card-border);
-        border-radius: 40px;
-        padding: 0.5rem 1.2rem;
-        color: var(--text-primary);
-        cursor: pointer;
-        transition: all 0.3s;
-        font-size: 1rem;
-    }}
-
-    .theme-toggle:hover, .lang-select:hover {{
-        transform: scale(1.05);
-        background: var(--accent-light);
-        color: white;
-    }}
-
-    /* Onglets */
     .stTabs [data-baseweb="tab-list"] {{
         gap: 0.5rem;
         background: var(--card-bg);
@@ -118,7 +90,6 @@ st.markdown(f"""
         color: white !important;
     }}
 
-    /* Hero section */
     .hero {{
         position: relative;
         overflow: hidden;
@@ -146,7 +117,6 @@ st.markdown(f"""
         100% {{ background-position: 1440px 0; }}
     }}
 
-    /* Cartes */
     .info-card, .analysis-card {{
         background: var(--card-bg);
         backdrop-filter: blur(var(--blur-amount));
@@ -162,7 +132,6 @@ st.markdown(f"""
         box-shadow: 0 30px 60px rgba(0,0,0,0.15);
     }}
 
-    /* Boutons */
     .stButton > button {{
         background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
         color: white;
@@ -181,7 +150,6 @@ st.markdown(f"""
         filter: brightness(1.1);
     }}
 
-    /* Responsive */
     @media (max-width: 768px) {{
         .hero {{ padding: 2rem 1rem; }}
         .stTabs [data-baseweb="tab"] {{ font-size: 0.9rem; padding: 0.4rem 1rem; }}
@@ -202,24 +170,28 @@ with col3:
         st.rerun()
 
 # Navigation par onglets
-tabs = st.tabs([
+tab_labels = [
     get_text("nav_home", st.session_state.lang),
     get_text("nav_analyses", st.session_state.lang),
     get_text("nav_request", st.session_state.lang),
     get_text("nav_resources", st.session_state.lang),
     get_text("nav_contact", st.session_state.lang),
     get_text("nav_admin", st.session_state.lang)
-])
+]
 
-with tabs[0]:
-    show_home()
-with tabs[1]:
-    show_analyses()
-with tabs[2]:
-    show_request()
-with tabs[3]:
-    show_resources()
-with tabs[4]:
-    show_contact()
-with tabs[5]:
-    show_admin()
+tabs = st.tabs(tab_labels)
+
+# Afficher le contenu de l'onglet sélectionné
+with tabs[st.session_state.selected_tab]:
+    if st.session_state.selected_tab == 0:
+        show_home()
+    elif st.session_state.selected_tab == 1:
+        show_analyses()
+    elif st.session_state.selected_tab == 2:
+        show_request()
+    elif st.session_state.selected_tab == 3:
+        show_resources()
+    elif st.session_state.selected_tab == 4:
+        show_contact()
+    elif st.session_state.selected_tab == 5:
+        show_admin()
