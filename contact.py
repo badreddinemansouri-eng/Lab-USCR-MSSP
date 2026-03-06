@@ -3,70 +3,59 @@ import streamlit as st
 def show_contact():
     st.markdown("""
     <div class="main-header">
-        <h1>📞 Contact</h1>
-        <p>Comment nous joindre</p>
+        <h1>📞 Contactez-nous</h1>
+        <p>Notre équipe est à votre disposition</p>
     </div>
     """, unsafe_allow_html=True)
     
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns([1, 1])
     
     with col1:
-        # À remplacer dans la section "Adresse" (lignes 9-15 environ)
         st.markdown("""
-            ## 📍 Adresse
-            **Unité de Service commune de Recherche**  
-            **Mesure de Surface Spécifique et de Porosité**  
+        <div class="info-card">
+            <h3>📍 Adresse</h3>
+            <p><strong>Uni té de Service commune de Recherche</strong><br>
+            Mesure de Surface Spécifique et de Porosité<br><br>
+            <strong>Université de Tunis El Manar</strong><br>
+            Campus Universitaire Farhat Hached<br>
+            Bâtiment des Sciences Exactes – Département de Chimie<br>
+            1068 Tunis, Tunisie</p>
             
-            **Université de Tunis El Manar**  
-            Campus Universitaire Farhat Hached  
-            Bâtiment des Sciences Exactes – Département de Chimie  
-            1068 Tunis, Tunisie  
+            <h3>📞 Téléphone</h3>
+            <p>+216 71 872 600 (standard FST)</p>
             
-            **Faculté des Sciences de Tunis (FST)**  
-            📍 Campus Universitaire - El Manar, 2092 Tunis  
-            📞 +216 71 872 600  
-            📠 +216 71 871 666  
+            <h3>📧 Email</h3>
+            <p>badreddine.mansouri@etudiant-fst.utm.tn<br>
+            lassaad.benhammouda@utm.tn</p>
             
-            🕒 **Horaires d'ouverture :**  
-            Lundi - Vendredi : 8h30 - 17h00  
-            Samedi : 9h00 - 12h00  
-            """)
-        
-        # Replace with actual map image or embed Google Maps
-        st.markdown("### 🗺️ Plan d'accès")
-        st.image("https://i.imgur.com/dCemmMW.png", 
-                use_column_width=True)
+            <h3>🕒 Horaires</h3>
+            <p>Lundi - Vendredi : 8h30 - 17h00<br>
+            Samedi : 9h00 - 12h00</p>
+        </div>
+        """, unsafe_allow_html=True)
     
     with col2:
-        st.markdown("## 👥 Personnel")
+        st.markdown("""
+        <div class="info-card">
+            <h3>🗺️ Plan d'accès</h3>
+        """, unsafe_allow_html=True)
+        # Utilisez votre propre image ou une capture d'écran Google Maps
+        st.image("https://i.imgur.com/dCemmMW.png", use_column_width=True)  # À remplacer par votre image
+        st.markdown("</div>", unsafe_allow_html=True)
         
         st.markdown("""
         <div class="info-card">
-            <h4>Badreddine Mansouri</h4>
-            <p><strong>Technicien responsable des analyses</strong></p>
-            <p>📧 badreddine.mansouri@etudiant-fst.utm.tn</p>
-            <p>📞 +216 53 821 882</p>
-            <p>🕒 Permanence : Lundi, Mercredi, Vendredi</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        st.markdown("""
-        <div class="info-card">
-            <h4>Pr. Lassaad BEN HAMMOUDA</h4>
-            <p><strong>Directeur de l'unité</strong></p>
-            <p>📧 lassaad.benhammouda@utm.tn</p>
-            <p>📞 +216 XX XXX XXX</p>
-            <p>🕒 Sur rendez-vous uniquement</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        st.markdown("## 📧 Formulaire de contact")
-        with st.form("contact_form"):
-            name = st.text_input("Votre nom *")
-            email = st.text_input("Votre email *")
-            subject = st.selectbox("Sujet", ["Demande d'information", "Question technique", "Prise de rendez-vous", "Autre"])
-            message = st.text_area("Votre message *")
+            <h3>👥 Personnel</h3>
+            <p><strong>Badreddine Mansouri</strong><br>
+            Technicien responsable des analyses<br>
+            📧 badreddine.mansouri@etudiant-fst.utm.tn<br>
+            📞 +216 53 821 882<br>
+            🕒 Permanence : Lundi, Mercredi, Vendredi</p>
             
-            submitted = st.form_submit_button("Envoyer")
-            if submitted:
-                st.success("Message envoyé ! Nous vous répondrons dans les plus brefs délais.")
+            <p><strong>Pr. Lassaad BEN HAMMOUDA</strong><br>
+            Directeur de l'unité<br>
+            📧 lassaad.benhammouda@utm.tn<br>
+            📞 +216 XX XXX XXX<br>
+            🕒 Sur rendez-vous uniquement</p>
+        </div>
+        """, unsafe_allow_html=True)
