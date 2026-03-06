@@ -2,23 +2,19 @@ import streamlit as st
 
 def show_isothermes():
     st.markdown("""
-    <div style="animation: fadeIn 0.8s ease;">
-        <h1 style="color:#2c3e50;">📊 Isothermes d'adsorption/désorption</h1>
-        <img src="https://via.placeholder.com/800x400?text=Isothermes+N2+CO2" style="width:100%; border-radius:10px; margin:20px 0;" alt="Isothermes">
+    <div style="animation: fadeInUp 0.8s ease;">
+        <h1 style="color:#2c3e50; font-weight:700;">📊 Isothermes d'adsorption/désorption</h1>
+        <img src="https://via.placeholder.com/1200x400?text=Micromeritics+ASAP+2020+-+Isothermes" style="width:100%; border-radius:20px; margin:20px 0; box-shadow:0 10px 30px rgba(0,0,0,0.1);" alt="Isothermes">
         
         <div class="info-card">
             <h3>🔬 Classification IUPAC</h3>
             <p>La forme de l'isotherme renseigne sur la nature poreuse du matériau. L'ASAP 2020 permet d'obtenir des isothermes complètes avec une haute résolution.</p>
-            <table style="width:100%; border-collapse: collapse;">
-                <tr style="background-color:#667eea; color:white;">
-                    <th style="padding:8px;">Type</th>
-                    <th style="padding:8px;">Description</th>
-                    <th style="padding:8px;">Matériaux typiques</th>
-                </tr>
-                <tr><td style="border:1px solid #ddd; padding:8px;"><strong>Type I</strong></td><td style="border:1px solid #ddd; padding:8px;">Micropor eux, plateau prononcé</td><td style="border:1px solid #ddd; padding:8px;">Zéolithes, charbons actifs</td></tr>
-                <tr><td style="border:1px solid #ddd; padding:8px;"><strong>Type II</strong></td><td style="border:1px solid #ddd; padding:8px;">Non-poreux ou macroporeux</td><td style="border:1px solid #ddd; padding:8px;">Poudres, pigments</td></tr>
-                <tr><td style="border:1px solid #ddd; padding:8px;"><strong>Type IV</strong></td><td style="border:1px solid #ddd; padding:8px;">Mésoporeux avec hystérésis</td><td style="border:1px solid #ddd; padding:8px;">Catalyseurs, silices mésoporeuses</td></tr>
-                <tr><td style="border:1px solid #ddd; padding:8px;"><strong>Type IVa</strong></td><td style="border:1px solid #ddd; padding:8px;">Hystérésis de type H1/H2</td><td style="border:1px solid #ddd; padding:8px;">Pores cylindriques / "bouteille d'encre"</td></tr>
+            <table>
+                <tr><th>Type</th><th>Description</th><th>Matériaux typiques</th></tr>
+                <tr><td><strong>Type I</strong></td><td>Microporeux, plateau prononcé</td><td>Zéolithes, charbons actifs</td></tr>
+                <tr><td><strong>Type II</strong></td><td>Non-poreux ou macroporeux</td><td>Poudres, pigments</td></tr>
+                <tr><td><strong>Type IV</strong></td><td>Mésoporeux avec hystérésis</td><td>Catalyseurs, silices mésoporeuses</td></tr>
+                <tr><td><strong>Type IVa</strong></td><td>Hystérésis de type H1/H2</td><td>Pores cylindriques / "bouteille d'encre"</td></tr>
             </table>
         </div>
         
@@ -44,10 +40,8 @@ def show_isothermes():
         
         <div class="info-card">
             <h3>📈 Exemple d'isotherme</h3>
-            <img src="https://via.placeholder.com/600x300?text=Isotherme+type+IV+avec+hysteresis" style="width:100%; border-radius:10px;" alt="Isotherme type IV">
-            <p style="font-style:italic; margin-top:10px;">Isotherme de type IV caractéristique des matériaux mésoporeux, avec boucle d'hystérésis.</p>
+            <img src="https://via.placeholder.com/800x400?text=Isotherme+type+IV+avec+hysteresis" style="width:100%; border-radius:15px; margin:10px 0;" alt="Isotherme type IV">
+            <p style="font-style:italic; color:#6c757d; text-align:center;">Isotherme de type IV caractéristique des matériaux mésoporeux, avec boucle d'hystérésis.</p>
         </div>
-        
-        <p style="margin-top:30px;">🔙 <a href="#" onclick="window.location.href='?page=Analyses'" style="color:#667eea;">Retour aux analyses</a></p>
     </div>
     """, unsafe_allow_html=True)
