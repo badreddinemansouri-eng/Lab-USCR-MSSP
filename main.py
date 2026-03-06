@@ -17,26 +17,22 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Mode debug
 if not st.secrets.get("debug", False):
     st.set_option('client.showErrorDetails', False)
 
-# Initialisation des états de session
 if "theme" not in st.session_state:
     st.session_state.theme = "light"
 if "lang" not in st.session_state:
     st.session_state.lang = "fr"
-if "selected_tab" not in st.session_state:
-    st.session_state.selected_tab = 0  # 0 = Accueil
+if "page" not in st.session_state:
+    st.session_state.page = get_text("nav_home", st.session_state.lang)
 
 def toggle_theme():
     st.session_state.theme = "dark" if st.session_state.theme == "light" else "light"
 
-# CSS global (identique à celui fourni, je le conserve)
 st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap');
-
     :root {{
         --bg-primary: {'#ffffff' if st.session_state.theme == 'light' else '#1a1a2e'};
         --bg-secondary: {'#f8f9fa' if st.session_state.theme == 'light' else '#16213e'};
@@ -49,47 +45,53 @@ st.markdown(f"""
         --shadow: {'0 10px 30px rgba(0,0,0,0.05)' if st.session_state.theme == 'light' else '0 10px 30px rgba(0,0,0,0.3)'};
         --blur-amount: 10px;
     }}
-
     body {{
         background-color: var(--bg-primary);
         color: var(--text-primary);
         transition: background-color 0.3s, color 0.3s;
     }}
-
     .stApp {{
         background: var(--bg-primary);
     }}
-
     .main .block-container {{
         background: var(--bg-primary);
         box-shadow: var(--shadow);
         padding-top: 1rem;
     }}
-
-    .stTabs [data-baseweb="tab-list"] {{
-        gap: 0.5rem;
+    .navbar {{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         background: var(--card-bg);
         backdrop-filter: blur(var(--blur-amount));
         border-radius: 60px;
-        padding: 0.5rem;
-        border: 1px solid var(--card-border);
+        padding: 0.5rem 1rem;
         margin-bottom: 2rem;
+        border: 1px solid var(--card-border);
         flex-wrap: wrap;
     }}
-
-    .stTabs [data-baseweb="tab"] {{
+    .nav-links {{
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }}
+    .nav-links .stButton > button {{
+        background: transparent;
         color: var(--text-primary);
+        border: none;
+        padding: 0.5rem 1.2rem;
         border-radius: 40px;
-        padding: 0.5rem 1.5rem;
         font-weight: 500;
-        transition: all 0.2s;
+        box-shadow: none;
+        width: auto;
     }}
-
-    .stTabs [aria-selected="true"] {{
-        background: var(--accent) !important;
-        color: white !important;
+    .nav-links .stButton > button:hover {{
+        background: rgba(26, 54, 93, 0.1);
     }}
-
+    .nav-controls {{
+        display: flex;
+        gap: 0.5rem;
+    }}
     .hero {{
         position: relative;
         overflow: hidden;
@@ -99,7 +101,6 @@ st.markdown(f"""
         border-radius: 40px;
         margin-bottom: 2rem;
     }}
-
     .hero::before {{
         content: '';
         position: absolute;
@@ -111,12 +112,10 @@ st.markdown(f"""
         animation: wave 15s linear infinite;
         opacity: 0.3;
     }}
-
     @keyframes wave {{
         0% {{ background-position: 0 0; }}
         100% {{ background-position: 1440px 0; }}
     }}
-
     .info-card, .analysis-card {{
         background: var(--card-bg);
         backdrop-filter: blur(var(--blur-amount));
@@ -126,12 +125,10 @@ st.markdown(f"""
         box-shadow: var(--shadow);
         transition: transform 0.3s, box-shadow 0.3s;
     }}
-
     .info-card:hover, .analysis-card:hover {{
         transform: translateY(-8px) scale(1.02);
         box-shadow: 0 30px 60px rgba(0,0,0,0.15);
     }}
-
     .stButton > button {{
         background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
         color: white;
@@ -143,34 +140,23 @@ st.markdown(f"""
         box-shadow: 0 8px 20px rgba(26,54,93,0.2);
         width: 100%;
     }}
-
     .stButton > button:hover {{
         transform: translateY(-3px);
         box-shadow: 0 15px 30px rgba(26,54,93,0.3);
         filter: brightness(1.1);
     }}
-
     @media (max-width: 768px) {{
+        .navbar {{
+            flex-direction: column;
+            gap: 1rem;
+        }}
         .hero {{ padding: 2rem 1rem; }}
-        .stTabs [data-baseweb="tab"] {{ font-size: 0.9rem; padding: 0.4rem 1rem; }}
     }}
 </style>
 """, unsafe_allow_html=True)
 
-# Barre de contrôle (thème et langue) en haut à droite
-col1, col2, col3 = st.columns([6, 1, 1])
-with col2:
-    if st.button("☀️" if st.session_state.theme == "light" else "🌙", key="theme_btn"):
-        toggle_theme()
-        st.rerun()
-with col3:
-    lang = st.selectbox("Langue", ["fr", "en"], index=0 if st.session_state.lang == "fr" else 1, label_visibility="collapsed", key="lang_selector")
-    if lang != st.session_state.lang:
-        st.session_state.lang = lang
-        st.rerun()
-
-# Navigation par onglets
-tab_labels = [
+# Barre de navigation horizontale
+nav_labels = [
     get_text("nav_home", st.session_state.lang),
     get_text("nav_analyses", st.session_state.lang),
     get_text("nav_request", st.session_state.lang),
@@ -179,19 +165,39 @@ tab_labels = [
     get_text("nav_admin", st.session_state.lang)
 ]
 
-tabs = st.tabs(tab_labels)
+with st.container():
+    st.markdown('<div class="navbar">', unsafe_allow_html=True)
+    st.markdown('<div class="nav-links">', unsafe_allow_html=True)
+    for label in nav_labels:
+        if st.button(label, key=f"nav_{label}"):
+            st.session_state.page = label
+            st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    st.markdown('<div class="nav-controls">', unsafe_allow_html=True)
+    col_theme, col_lang = st.columns(2)
+    with col_theme:
+        if st.button("☀️" if st.session_state.theme == "light" else "🌙", key="theme_btn"):
+            toggle_theme()
+            st.rerun()
+    with col_lang:
+        lang = st.selectbox("Langue", ["fr", "en"], index=0 if st.session_state.lang == "fr" else 1, label_visibility="collapsed", key="lang_selector")
+        if lang != st.session_state.lang:
+            st.session_state.lang = lang
+            st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-# Afficher le contenu de l'onglet sélectionné
-with tabs[st.session_state.selected_tab]:
-    if st.session_state.selected_tab == 0:
-        show_home()
-    elif st.session_state.selected_tab == 1:
-        show_analyses()
-    elif st.session_state.selected_tab == 2:
-        show_request()
-    elif st.session_state.selected_tab == 3:
-        show_resources()
-    elif st.session_state.selected_tab == 4:
-        show_contact()
-    elif st.session_state.selected_tab == 5:
-        show_admin()
+# Routage
+if st.session_state.page == get_text("nav_home", st.session_state.lang):
+    show_home()
+elif st.session_state.page == get_text("nav_analyses", st.session_state.lang):
+    show_analyses()
+elif st.session_state.page == get_text("nav_request", st.session_state.lang):
+    show_request()
+elif st.session_state.page == get_text("nav_resources", st.session_state.lang):
+    show_resources()
+elif st.session_state.page == get_text("nav_contact", st.session_state.lang):
+    show_contact()
+elif st.session_state.page == get_text("nav_admin", st.session_state.lang):
+    show_admin()
