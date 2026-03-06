@@ -2,9 +2,9 @@ import streamlit as st
 
 def show_bet():
     st.markdown("""
-    <div style="animation: fadeIn 0.8s ease;">
-        <h1 style="color:#2c3e50;">📈 Analyse BET – Surface spécifique</h1>
-        <img src="https://via.placeholder.com/800x400?text=Analyse+BET+ASAP+2020" style="width:100%; border-radius:10px; margin:20px 0;" alt="Analyse BET">
+    <div style="animation: fadeInUp 0.8s ease;">
+        <h1 style="color:#2c3e50; font-weight:700;">📈 Analyse BET – Surface spécifique</h1>
+        <img src="https://via.placeholder.com/1200x400?text=Micromeritics+ASAP+2020+-+Analyse+BET" style="width:100%; border-radius:20px; margin:20px 0; box-shadow:0 10px 30px rgba(0,0,0,0.1);" alt="Analyse BET">
         
         <div class="info-card">
             <h3>🔬 Principe de la méthode</h3>
@@ -24,24 +24,19 @@ def show_bet():
         
         <div class="info-card">
             <h3>🧪 Applications</h3>
-            <table style="width:100%; border-collapse: collapse;">
-                <tr style="background-color:#667eea; color:white;">
-                    <th style="padding:8px;">Domaine</th>
-                    <th style="padding:8px;">Application</th>
-                </tr>
-                <tr><td style="border:1px solid #ddd; padding:8px;">Catalyse</td><td style="border:1px solid #ddd; padding:8px;">Caractérisation des supports (alumine, silice, zéolithes)</td></tr>
-                <tr><td style="border:1px solid #ddd; padding:8px;">Pharmaceutique</td><td style="border:1px solid #ddd; padding:8px;">Contrôle qualité des principes actifs et excipients</td></tr>
-                <tr><td style="border:1px solid #ddd; padding:8px;">Nanomatériaux</td><td style="border:1px solid #ddd; padding:8px;">Nanotubes, nanoparticules, graphène</td></tr>
-                <tr><td style="border:1px solid #ddd; padding:8px;">Céramiques</td><td style="border:1px solid #ddd; padding:8px;">Optimisation du frittage et des propriétés mécaniques</td></tr>
+            <table>
+                <tr><th>Domaine</th><th>Application</th></tr>
+                <tr><td>Catalyse</td><td>Caractérisation des supports (alumine, silice, zéolithes)</td></tr>
+                <tr><td>Pharmaceutique</td><td>Contrôle qualité des principes actifs et excipients</td></tr>
+                <tr><td>Nanomatériaux</td><td>Nanotubes, nanoparticules, graphène</td></tr>
+                <tr><td>Céramiques</td><td>Optimisation du frittage et des propriétés mécaniques</td></tr>
             </table>
         </div>
         
         <div class="info-card">
             <h3>📈 Exemple de courbe BET</h3>
-            <img src="https://via.placeholder.com/600x300?text=Courbe+BET+multipoints" style="width:100%; border-radius:10px;" alt="Courbe BET">
-            <p style="font-style:italic; margin-top:10px;">La partie linéaire (généralement entre P/P₀ = 0,05 et 0,30) permet de déterminer la capacité de la monocouche et la surface spécifique.</p>
+            <img src="https://via.placeholder.com/800x400?text=Courbe+BET+multipoints" style="width:100%; border-radius:15px; margin:10px 0;" alt="Courbe BET">
+            <p style="font-style:italic; color:#6c757d; text-align:center;">La partie linéaire (généralement entre P/P₀ = 0,05 et 0,30) permet de déterminer la capacité de la monocouche et la surface spécifique.</p>
         </div>
-        
-        <p style="margin-top:30px;">🔙 <a href="#" onclick="window.location.href='?page=Analyses'" style="color:#667eea;">Retour aux analyses</a></p>
     </div>
     """, unsafe_allow_html=True)
