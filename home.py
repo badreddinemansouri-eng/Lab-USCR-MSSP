@@ -1,25 +1,29 @@
 import streamlit as st
+from utils_i18n import get_text
 
 def show_home():
     st.markdown("""
-    <div class="main-header">
+    <div class="hero">
         <h1>🧪 Unité de Service commune de Recherche</h1>
-        <h2>Mesure de Surface Spécifique et de Porosité</h2>
-        <p style="font-size:1.2rem;">Analyse texturale de précision avec le Micromeritics ASAP 2020</p>
+        <p style="font-size:1.5rem;">Mesure de Surface Spécifique et de Porosité</p>
+        <p style="font-size:1.2rem; margin-top:1rem;">Analyse texturale de précision avec le Micromeritics ASAP 2020</p>
     </div>
     """, unsafe_allow_html=True)
     
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        st.markdown("""
-        <div class="info-card">
-            <h3>🎯 Bienvenue</h3>
-            <p>Notre unité est dédiée à la caractérisation texturale des matériaux poreux et divisés. Nous mettons à disposition des chercheurs et industriels un équipement de pointe pour l'analyse de surface spécifique et de porosité.</p>
-            <p><strong>Notre mission :</strong> Fournir des mesures précises et reproductibles pour accompagner vos projets de recherche et développement.</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
+        with st.container():
+            st.markdown("## 🎯 " + get_text("welcome", st.session_state.lang))
+            st.markdown("""
+            Notre unité est dédiée à la caractérisation texturale des matériaux poreux et divisés. 
+            Nous mettons à disposition des chercheurs et industriels un équipement de pointe pour 
+            l'analyse de surface spécifique et de porosité.
+            
+            **Notre mission :** Fournir des mesures précises et reproductibles pour accompagner 
+            vos projets de recherche et développement.
+            """)
+            
         col_stats1, col_stats2, col_stats3 = st.columns(3)
         with col_stats1:
             st.metric("Analyses réalisées", "1500+", "+12%")
@@ -31,20 +35,20 @@ def show_home():
     with col2:
         st.markdown("""
         <div class="info-card">
-            <h3>👥 Équipe</h3>
+            <h3>👥 """ + get_text("our_team", st.session_state.lang) + """</h3>
             <p><strong>Badreddine Mansouri</strong><br>
-            <em>Responsable des analyses</em></p>
+            <span style="color:var(--text-secondary);">Responsable des analyses</span></p>
             <p><strong>Pr. Lassaad BEN HAMMOUDA</strong><br>
-            <em>Directeur de l'unité</em></p>
-            <p style="margin-top:1rem;"><a href="#" class="custom-button">Faire une demande →</a></p>
+            <span style="color:var(--text-secondary);">Directeur de l'unité</span></p>
+            <p style="margin-top:1.5rem;">
+                <a href="#" class="custom-button">""" + get_text("make_request", st.session_state.lang) + """ →</a>
+            </p>
         </div>
         """, unsafe_allow_html=True)
     
     st.markdown("---")
     
-    st.markdown("""
-    <h2 style="text-align:center; margin:2rem 0;">🔬 Notre équipement principal</h2>
-    """, unsafe_allow_html=True)
+    st.markdown("## 🔬 Notre équipement principal")
     
     col_eq1, col_eq2 = st.columns(2)
     
@@ -70,42 +74,38 @@ def show_home():
                 caption="Micromeritics ASAP 2020 - Analyseur de surface et porosité",
                 use_column_width=True)
     
-    st.markdown("""
-    <h2 style="text-align:center; margin:2rem 0;">📊 Analyses disponibles</h2>
-    """, unsafe_allow_html=True)
+    st.markdown("## 📊 Analyses disponibles")
     
     col_ana1, col_ana2, col_ana3 = st.columns(3)
     
     with col_ana1:
         st.markdown("""
-        <div class="analysis-card">
+        <div class="analysis-card" style="cursor:default;">
             <h4>📈 Surface spécifique</h4>
             <p>Méthode BET multipoints pour une mesure précise de la surface spécifique des matériaux.</p>
-            <p><strong>Applications :</strong> Catalyseurs, adsorbants, nanomatériaux</p>
+            <p><span class="badge">Catalyseurs, adsorbants, nanomatériaux</span></p>
         </div>
         """, unsafe_allow_html=True)
     
     with col_ana2:
         st.markdown("""
-        <div class="analysis-card">
+        <div class="analysis-card" style="cursor:default;">
             <h4>🕳️ Porosité</h4>
             <p>Distribution de taille des pores par méthodes BJH, DFT et t-plot.</p>
-            <p><strong>Applications :</strong> Zéolithes, MOFs, matériaux mésoporeux</p>
+            <p><span class="badge">Zéolithes, MOFs, matériaux mésoporeux</span></p>
         </div>
         """, unsafe_allow_html=True)
     
     with col_ana3:
         st.markdown("""
-        <div class="analysis-card">
+        <div class="analysis-card" style="cursor:default;">
             <h4>📊 Isothermes</h4>
             <p>Isothermes complètes d'adsorption/désorption à 77K (N₂) et 273K (CO₂).</p>
-            <p><strong>Applications :</strong> Caractérisation complète de la texture</p>
+            <p><span class="badge">Caractérisation complète de la texture</span></p>
         </div>
         """, unsafe_allow_html=True)
     
-    st.markdown("""
-    <h2 style="text-align:center; margin:2rem 0;">🔜 Prochainement disponibles</h2>
-    """, unsafe_allow_html=True)
+    st.markdown("## 🔜 Prochainement disponibles")
     
     col_fut1, col_fut2 = st.columns(2)
     
@@ -127,9 +127,7 @@ def show_home():
         </div>
         """, unsafe_allow_html=True)
     
-    st.markdown("""
-    <h2 style="text-align:center; margin:2rem 0;">📰 Actualités</h2>
-    """, unsafe_allow_html=True)
+    st.markdown("## 📰 Actualités")
     
     col_news1, col_news2 = st.columns(2)
     
@@ -150,3 +148,9 @@ def show_home():
             <p>Notre unité a contribué à une étude sur les nouveaux MOFs pour le stockage de gaz, publiée dans Chemistry of Materials.</p>
         </div>
         """, unsafe_allow_html=True)
+    
+    st.markdown("---")
+    
+    with st.expander("🎥 Voir la vidéo de présentation"):
+        st.video("https://www.youtube.com/watch?v=placeholder")
+        st.caption("Présentation du laboratoire et de l'ASAP 2020")
