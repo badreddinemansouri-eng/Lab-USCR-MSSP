@@ -5,11 +5,10 @@ from request import show_request
 from resources import show_resources
 from contact import show_contact
 from admin import show_admin
-
-# Imports pour les pages détaillées (utilisées par analyses.py)
 from bet import show_bet
 from porosite import show_porosite
 from isothermes import show_isothermes
+from utils_i18n import get_text
 
 st.set_page_config(
     page_title="USR Mesure de Surface Spécifique et Porosité",
@@ -18,271 +17,251 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Mode debug (cacher les erreurs aux utilisateurs)
+# Mode debug
 if not st.secrets.get("debug", False):
     st.set_option('client.showErrorDetails', False)
 
-# CSS global avec design moderne et animations
-st.markdown("""
+# Initialisation des états de session
+if "theme" not in st.session_state:
+    st.session_state.theme = "light"
+if "lang" not in st.session_state:
+    st.session_state.lang = "fr"
+
+# Fonction pour basculer le thème
+def toggle_theme():
+    st.session_state.theme = "dark" if st.session_state.theme == "light" else "light"
+
+# CSS global avec variables CSS pour les thèmes et animations
+st.markdown(f"""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-    
-    * {
-        font-family: 'Inter', sans-serif;
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-    }
-    
-    /* Animations */
-    @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-5px); }
-        100% { transform: translateY(0px); }
-    }
-    
-    /* Header principal */
-    .main-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 2.5rem;
-        border-radius: 20px;
-        color: white;
-        text-align: center;
-        margin-bottom: 2rem;
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-        animation: fadeInUp 1s ease;
-    }
-    
-    .main-header h1 {
-        font-size: 2.5rem;
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+    :root {{
+        --bg-primary: {'#ffffff' if st.session_state.theme == 'light' else '#1a1a2e'};
+        --bg-secondary: {'#f8f9fa' if st.session_state.theme == 'light' else '#16213e'};
+        --text-primary: {'#1e2b4f' if st.session_state.theme == 'light' else '#e0e0e0'};
+        --text-secondary: {'#5a6b7e' if st.session_state.theme == 'light' else '#b0b0b0'};
+        --accent: #1e2b4f;
+        --accent-light: #2a3f6e;
+        --card-bg: {'rgba(255,255,255,0.7)' if st.session_state.theme == 'light' else 'rgba(30,30,50,0.7)'};
+        --card-border: {'rgba(0,0,0,0.05)' if st.session_state.theme == 'light' else 'rgba(255,255,255,0.05)'};
+        --shadow: {'0 10px 30px rgba(0,0,0,0.05)' if st.session_state.theme == 'light' else '0 10px 30px rgba(0,0,0,0.3)'};
+        --blur-amount: 10px;
+    }}
+
+    /* Appliquer les couleurs */
+    body {{
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        transition: background-color 0.3s, color 0.3s;
+    }}
+
+    .stApp {{
+        background: var(--bg-primary);
+    }}
+
+    .main .block-container {{
+        background: var(--bg-primary);
+        box-shadow: var(--shadow);
+    }}
+
+    /* Typographie */
+    h1, h2, h3, h4 {{
+        font-family: 'Playfair Display', serif;
         font-weight: 700;
-        margin-bottom: 0.5rem;
-    }
-    
-    .main-header p {
-        font-size: 1.2rem;
-        opacity: 0.9;
-    }
-    
-    /* Cartes d'information */
-    .info-card {
-        background: white;
-        border-radius: 15px;
-        padding: 1.8rem;
-        margin: 1rem 0;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        transition: all 0.3s ease;
-        border: 1px solid rgba(0, 0, 0, 0.03);
-        animation: fadeInUp 0.8s ease;
-    }
-    
-    .info-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
-        border-color: #667eea;
-    }
-    
-    .info-card h3 {
-        color: #2c3e50;
-        font-weight: 600;
-        margin-bottom: 1rem;
-    }
-    
-    .info-card h4 {
-        color: #667eea;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-    }
-    
-    /* Cartes d'analyse (page analyses) */
-    .analysis-card {
-        background: white;
-        border-radius: 20px;
-        padding: 1.8rem;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-        cursor: pointer;
-        border: 1px solid rgba(0, 0, 0, 0.05);
-        height: 100%;
-        animation: fadeInUp 0.8s ease;
-        text-align: center;
-    }
-    
-    .analysis-card:hover {
-        transform: scale(1.02);
-        box-shadow: 0 25px 50px rgba(102, 126, 234, 0.2);
-        border-color: #667eea;
-    }
-    
-    .analysis-card img {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-        border-radius: 15px;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease;
-    }
-    
-    .analysis-card:hover img {
-        transform: scale(1.05);
-    }
-    
-    .analysis-card h3 {
-        color: #2c3e50;
-        font-weight: 700;
-        margin-bottom: 0.8rem;
-    }
-    
-    .analysis-card p {
-        color: #6c757d;
-        line-height: 1.6;
-        margin-bottom: 1.2rem;
-    }
-    
-    /* Boutons personnalisés */
-    .custom-button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 0.7rem 2rem;
-        border-radius: 50px;
-        text-decoration: none;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        display: inline-block;
-        border: none;
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        cursor: pointer;
-        font-size: 1rem;
-    }
-    
-    .custom-button:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.5);
-    }
-    
-    .custom-button:active {
-        transform: translateY(0);
-    }
-    
-    /* Onglets */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 2rem;
-        justify-content: center;
-        background: white;
-        padding: 0.8rem;
-        border-radius: 60px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
-        margin-bottom: 2rem;
-        border: 1px solid rgba(0, 0, 0, 0.05);
-    }
-    
-    .stTabs [data-baseweb="tab"] {
-        font-size: 1.1rem;
-        font-weight: 500;
-        color: #6c757d;
-        padding: 0.5rem 1.2rem;
-        border-radius: 40px;
-        transition: all 0.2s ease;
-    }
-    
-    .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white !important;
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-    }
-    
-    /* Tableaux */
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 1rem 0;
-        border-radius: 10px;
+    }}
+
+    h1 {{
+        font-size: 3rem;
+        letter-spacing: -0.02em;
+    }}
+
+    /* Hero section avec animation de particules (vagues) */
+    .hero {{
+        position: relative;
         overflow: hidden;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-    }
-    
-    th {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 4rem 2rem;
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
         color: white;
+        border-radius: 40px;
+        margin-bottom: 2rem;
+    }}
+
+    .hero::before {{
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" d="M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,117.3C960,107,1056,149,1152,165.3C1248,181,1344,171,1392,165.3L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"/></svg>') repeat-x bottom;
+        animation: wave 15s linear infinite;
+        opacity: 0.3;
+    }}
+
+    @keyframes wave {{
+        0% {{ background-position: 0 0; }}
+        100% {{ background-position: 1440px 0; }}
+    }}
+
+    /* Cartes avec effet de verre */
+    .info-card, .analysis-card {{
+        background: var(--card-bg);
+        backdrop-filter: blur(var(--blur-amount));
+        -webkit-backdrop-filter: blur(var(--blur-amount));
+        border: 1px solid var(--card-border);
+        border-radius: 24px;
+        padding: 2rem;
+        box-shadow: var(--shadow);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }}
+
+    .info-card:hover, .analysis-card:hover {{
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+    }}
+
+    /* Boutons avec micro-interactions */
+    .stButton > button {{
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 0.8rem 2rem;
         font-weight: 600;
-        padding: 12px;
-        text-align: left;
-    }
-    
-    td {
-        padding: 10px;
-        border-bottom: 1px solid #f1f1f1;
-    }
-    
-    tr:hover {
-        background-color: #f8f9fa;
-    }
-    
-    /* Pied de page */
-    .footer {
-        background: #2c3e50;
-        color: white;
-        padding: 2rem;
-        border-radius: 20px;
-        margin-top: 3rem;
-        text-align: center;
-        animation: fadeInUp 0.8s ease;
-    }
-    
+        transition: all 0.3s;
+        box-shadow: 0 8px 20px rgba(26,54,93,0.2);
+        width: 100%;
+    }}
+
+    .stButton > button:hover {{
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(26,54,93,0.3);
+        filter: brightness(1.1);
+    }}
+
+    .stButton > button:active {{
+        transform: translateY(0);
+    }}
+
+    /* Onglets */
+    .stTabs [data-baseweb="tab-list"] {{
+        background: var(--card-bg);
+        backdrop-filter: blur(var(--blur-amount));
+        border-radius: 60px;
+        padding: 0.5rem;
+        gap: 0.5rem;
+    }}
+
+    .stTabs [data-baseweb="tab"] {{
+        color: var(--text-primary);
+        border-radius: 40px;
+        padding: 0.5rem 1.5rem;
+        transition: all 0.2s;
+    }}
+
+    .stTabs [aria-selected="true"] {{
+        background: var(--accent) !important;
+        color: white !important;
+    }}
+
+    /* Sélecteurs de thème et langue */
+    .theme-toggle, .lang-selector {{
+        display: inline-block;
+        margin: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: var(--card-bg);
+        backdrop-filter: blur(var(--blur-amount));
+        border-radius: 50px;
+        border: 1px solid var(--card-border);
+        cursor: pointer;
+        transition: all 0.3s;
+    }}
+
+    .theme-toggle:hover, .lang-selector:hover {{
+        transform: scale(1.05);
+    }}
+
+    /* Animation de chargement */
+    @keyframes pulse {{
+        0% {{ opacity: 0.6; }}
+        50% {{ opacity: 1; }}
+        100% {{ opacity: 0.6; }}
+    }}
+
+    .loading {{
+        animation: pulse 1.5s infinite;
+    }}
+
     /* Responsive */
-    @media (max-width: 768px) {
-        .main-header h1 { font-size: 2rem; }
-        .main-header p { font-size: 1rem; }
-        .analysis-card img { height: 150px; }
-        .stTabs [data-baseweb="tab"] { font-size: 0.9rem; padding: 0.3rem 0.8rem; }
-    }
-    
-    @media (max-width: 480px) {
-        .main-header h1 { font-size: 1.6rem; }
-        .analysis-card { padding: 1rem; }
-        .custom-button { padding: 0.5rem 1.5rem; }
-    }
-    
-    /* Arrière-plan général */
-    .stApp {
-        background-color: #f8f9fa;
-    }
-    
-    .main .block-container {
-        background: white;
-        border-radius: 30px;
-        padding: 2rem;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.03);
-        max-width: 1300px;
-        margin: 0 auto;
-    }
-    
-    /* Images responsives */
-    img {
-        max-width: 100%;
-        height: auto;
-    }
+    @media (max-width: 768px) {{
+        h1 {{ font-size: 2rem; }}
+        .hero {{ padding: 2rem 1rem; }}
+    }}
+
+    /* Style des métriques */
+    .stMetric {{
+        background: var(--card-bg);
+        backdrop-filter: blur(var(--blur-amount));
+        border-radius: 20px;
+        padding: 1rem;
+        border: 1px solid var(--card-border);
+    }}
 </style>
 """, unsafe_allow_html=True)
 
-# Navigation par onglets
-tabs = st.tabs(["🏠 Accueil", "🔬 Analyses", "📝 Demande", "📚 Ressources", "📞 Contact", "🔐 Admin"])
+# Barre latérale avec contrôles de thème et langue
+with st.sidebar:
+    st.markdown("## **USR**")
+    st.markdown("### Mesure de Surface")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("☀️" if st.session_state.theme == "light" else "🌙", key="theme_btn"):
+            toggle_theme()
+            st.rerun()
+    with col2:
+        lang = st.selectbox("Langue", ["fr", "en"], index=0 if st.session_state.lang == "fr" else 1, label_visibility="collapsed")
+        if lang != st.session_state.lang:
+            st.session_state.lang = lang
+            st.rerun()
+    
+    st.markdown("---")
+    st.markdown("### 📋 Navigation")
+    page = st.radio(
+        "Aller à",
+        [get_text("nav_home", st.session_state.lang),
+         get_text("nav_analyses", st.session_state.lang),
+         get_text("nav_request", st.session_state.lang),
+         get_text("nav_resources", st.session_state.lang),
+         get_text("nav_contact", st.session_state.lang),
+         get_text("nav_admin", st.session_state.lang)],
+        label_visibility="collapsed"
+    )
+    
+    st.markdown("---")
+    st.markdown("### 🕒 Horaires")
+    st.markdown("Lundi - Vendredi: 8h30 - 17h00")
+    st.markdown("Samedi: 9h00 - 12h00")
+    
+    st.markdown("### 📍 Adresse")
+    st.markdown("Université de Tunis El Manar")
+    st.markdown("Campus Universitaire Farhat Hached")
+    st.markdown("1068 Tunis, Tunisie")
+    
+    st.markdown("---")
+    st.markdown("**Version 4.0** | © 2026")
 
-with tabs[0]:
+# Routage
+if page == get_text("nav_home", st.session_state.lang):
     show_home()
-with tabs[1]:
+elif page == get_text("nav_analyses", st.session_state.lang):
     show_analyses()
-with tabs[2]:
+elif page == get_text("nav_request", st.session_state.lang):
     show_request()
-with tabs[3]:
+elif page == get_text("nav_resources", st.session_state.lang):
     show_resources()
-with tabs[4]:
+elif page == get_text("nav_contact", st.session_state.lang):
     show_contact()
-with tabs[5]:
+elif page == get_text("nav_admin", st.session_state.lang):
     show_admin()
