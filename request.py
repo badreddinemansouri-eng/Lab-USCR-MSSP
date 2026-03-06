@@ -11,7 +11,7 @@ def show_request():
     """, unsafe_allow_html=True)
 
     with st.form("request_form"):
-        st.subheader("Informations du chercheur")
+        st.markdown("### 👤 Informations du chercheur")
         col1, col2 = st.columns(2)
         with col1:
             researcher_name = st.text_input("Nom et prénom du demandeur *", key="name")
@@ -25,8 +25,8 @@ def show_request():
             director_name = st.text_input("Nom et prénom du Directeur de laboratoire *", key="director")
             lab_unit = st.text_input("Laboratoire/Unité de Recherche/Service (Nom & Code) *", key="lab_unit")
 
-        st.subheader("Échantillons (max 4)")
-        st.markdown("Chaque échantillon doit avoir un nom (max 8 caractères), une nature et une température de prétraitement éventuelle.")
+        st.markdown("### 🧪 Échantillons (max 4)")
+        st.caption("Chaque échantillon doit avoir un nom (max 8 caractères), une nature et une température de prétraitement éventuelle.")
         samples = []
         for i in range(4):
             with st.expander(f"Échantillon {i+1}"):
@@ -36,32 +36,32 @@ def show_request():
                 with colb:
                     nature = st.text_input(f"Nature", key=f"sample_nature_{i}")
                 with colc:
-                    temp = st.text_input(f"Traitement (°C) *", key=f"sample_temp_{i}")
+                    temp = st.text_input(f"Traitement (°C)", key=f"sample_temp_{i}")
                 if name or nature or temp:
                     samples.append({"name": name, "nature": nature, "temp": temp})
 
-        st.subheader("Traitement global de l’échantillon")
+        st.markdown("### 🔧 Traitement global de l’échantillon")
         colt1, colt2 = st.columns(2)
         with colt1:
             treatment_ambiance = st.checkbox("Ambiance")
         with colt2:
             treatment_temperature = st.text_input("Si Autre, T = °C", key="global_temp")
 
-        st.subheader("Analyses demandées")
+        st.markdown("### 📊 Analyses demandées")
         analysis_types = st.multiselect(
             "Sélectionnez les analyses",
             ["S BET", "Porosité", "t-plot", "BJH-des", "Isothermes"],
             key="analysis"
         )
 
-        st.subheader("Date de la demande")
+        st.markdown("### 📅 Date de la demande")
         date_demande = st.date_input("Date", value=date.today(), key="date")
 
-        special_instructions = st.text_area("Instructions spéciales / Remarques", key="special")
+        special_instructions = st.text_area("📝 Instructions spéciales / Remarques", key="special")
 
         st.markdown("---")
         st.markdown("**En soumettant ce formulaire, vous recevrez un PDF par email. Vous devrez le faire signer et cacheter par votre directeur avant de le déposer au laboratoire.**")
-        submitted = st.form_submit_button("Soumettre la demande")
+        submitted = st.form_submit_button("📤 Soumettre la demande", use_container_width=True)
 
     if submitted:
         required = [researcher_name, researcher_email, organisation, director_name, lab_unit]
