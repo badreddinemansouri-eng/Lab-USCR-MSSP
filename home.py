@@ -5,22 +5,20 @@ def show_home():
     <div class="main-header">
         <h1>🧪 Unité de Service commune de Recherche</h1>
         <h2>Mesure de Surface Spécifique et de Porosité</h2>
-        <p style="font-size: 1.2rem;">Analyse texturale de précision avec le Micromeritics ASAP 2020</p>
+        <p style="font-size:1.2rem;">Analyse texturale de précision avec le Micromeritics ASAP 2020</p>
     </div>
     """, unsafe_allow_html=True)
     
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        st.markdown("## 🎯 Bienvenue")
         st.markdown("""
-        Notre unité est dédiée à la caractérisation texturale des matériaux poreux et divisés. 
-        Nous mettons à disposition des chercheurs et industriels un équipement de pointe pour 
-        l'analyse de surface spécifique et de porosité.
-        
-        **Notre mission** : Fournir des mesures précises et reproductibles pour accompagner 
-        vos projets de recherche et développement.
-        """)
+        <div class="info-card">
+            <h3>🎯 Bienvenue</h3>
+            <p>Notre unité est dédiée à la caractérisation texturale des matériaux poreux et divisés. Nous mettons à disposition des chercheurs et industriels un équipement de pointe pour l'analyse de surface spécifique et de porosité.</p>
+            <p><strong>Notre mission :</strong> Fournir des mesures précises et reproductibles pour accompagner vos projets de recherche et développement.</p>
+        </div>
+        """, unsafe_allow_html=True)
         
         col_stats1, col_stats2, col_stats3 = st.columns(3)
         with col_stats1:
@@ -31,26 +29,22 @@ def show_home():
             st.metric("Publications supportées", "45", "+5")
     
     with col2:
-        st.markdown("### 👥 Équipe")
         st.markdown("""
-        **Technicien**  
-        Badreddine Mansouri  
-        *Responsable des analyses*
-        
-        **Directeur**  
-        Pr. Lassaad BEN HAMMOUDA  
-        *Responsable scientifique*
-        """)
-        
-        st.markdown("""
-        <a href="#" class="custom-button" onclick="alert('Redirection vers le formulaire')">
-            Faire une demande →
-        </a>
+        <div class="info-card">
+            <h3>👥 Équipe</h3>
+            <p><strong>Badreddine Mansouri</strong><br>
+            <em>Responsable des analyses</em></p>
+            <p><strong>Pr. Lassaad BEN HAMMOUDA</strong><br>
+            <em>Directeur de l'unité</em></p>
+            <p style="margin-top:1rem;"><a href="#" class="custom-button">Faire une demande →</a></p>
+        </div>
         """, unsafe_allow_html=True)
     
     st.markdown("---")
     
-    st.markdown("## 🔬 Notre équipement principal")
+    st.markdown("""
+    <h2 style="text-align:center; margin:2rem 0;">🔬 Notre équipement principal</h2>
+    """, unsafe_allow_html=True)
     
     col_eq1, col_eq2 = st.columns(2)
     
@@ -58,9 +52,7 @@ def show_home():
         st.markdown("""
         <div class="info-card">
             <h3>Micromeritics ASAP 2020</h3>
-            <p>L'ASAP 2020 est un analyseur de surface et de porosité de haute performance, 
-            conçu pour la caractérisation précise des matériaux.</p>
-            
+            <p>L'ASAP 2020 est un analyseur de surface et de porosité de haute performance, conçu pour la caractérisation précise des matériaux.</p>
             <h4>Caractéristiques techniques :</h4>
             <ul>
                 <li>✅ Surface spécifique de 0.01 à > 2000 m²/g</li>
@@ -74,18 +66,19 @@ def show_home():
         """, unsafe_allow_html=True)
     
     with col_eq2:
-        # Replace with your actual photo
         st.image("https://micromeritrics.com.cn/wp-content/uploads/2024/01/ASAP-2020-plus-micromeritics.png", 
                 caption="Micromeritics ASAP 2020 - Analyseur de surface et porosité",
                 use_column_width=True)
     
-    st.markdown("## 📊 Analyses disponibles")
+    st.markdown("""
+    <h2 style="text-align:center; margin:2rem 0;">📊 Analyses disponibles</h2>
+    """, unsafe_allow_html=True)
     
     col_ana1, col_ana2, col_ana3 = st.columns(3)
     
     with col_ana1:
         st.markdown("""
-        <div class="info-card">
+        <div class="analysis-card">
             <h4>📈 Surface spécifique</h4>
             <p>Méthode BET multipoints pour une mesure précise de la surface spécifique des matériaux.</p>
             <p><strong>Applications :</strong> Catalyseurs, adsorbants, nanomatériaux</p>
@@ -94,7 +87,7 @@ def show_home():
     
     with col_ana2:
         st.markdown("""
-        <div class="info-card">
+        <div class="analysis-card">
             <h4>🕳️ Porosité</h4>
             <p>Distribution de taille des pores par méthodes BJH, DFT et t-plot.</p>
             <p><strong>Applications :</strong> Zéolithes, MOFs, matériaux mésoporeux</p>
@@ -103,14 +96,16 @@ def show_home():
     
     with col_ana3:
         st.markdown("""
-        <div class="info-card">
+        <div class="analysis-card">
             <h4>📊 Isothermes</h4>
             <p>Isothermes complètes d'adsorption/désorption à 77K (N₂) et 273K (CO₂).</p>
             <p><strong>Applications :</strong> Caractérisation complète de la texture</p>
         </div>
         """, unsafe_allow_html=True)
     
-    st.markdown("## 🔜 Prochainement disponibles")
+    st.markdown("""
+    <h2 style="text-align:center; margin:2rem 0;">🔜 Prochainement disponibles</h2>
+    """, unsafe_allow_html=True)
     
     col_fut1, col_fut2 = st.columns(2)
     
@@ -132,7 +127,9 @@ def show_home():
         </div>
         """, unsafe_allow_html=True)
     
-    st.markdown("## 📰 Actualités")
+    st.markdown("""
+    <h2 style="text-align:center; margin:2rem 0;">📰 Actualités</h2>
+    """, unsafe_allow_html=True)
     
     col_news1, col_news2 = st.columns(2)
     
@@ -141,8 +138,7 @@ def show_home():
         <div class="info-card">
             <h4>📢 Nouvelle formation</h4>
             <p><small>15 Mars 2026</small></p>
-            <p>Formation à l'utilisation de l'ASAP 2020 ouverte aux chercheurs et doctorants. 
-            Inscriptions jusqu'au 30 Mars.</p>
+            <p>Formation à l'utilisation de l'ASAP 2020 ouverte aux chercheurs et doctorants. Inscriptions jusqu'au 30 Mars.</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -151,13 +147,6 @@ def show_home():
         <div class="info-card">
             <h4>🏆 Publication collaborative</h4>
             <p><small>10 Février 2026</small></p>
-            <p>Notre unité a contribué à une étude sur les nouveaux MOFs pour le stockage de gaz, 
-            publiée dans Chemistry of Materials.</p>
+            <p>Notre unité a contribué à une étude sur les nouveaux MOFs pour le stockage de gaz, publiée dans Chemistry of Materials.</p>
         </div>
         """, unsafe_allow_html=True)
-    
-    st.markdown("---")
-    
-    with st.expander("🎥 Voir la vidéo de présentation"):
-        st.video("https://www.youtube.com/watch?v=placeholder")  # Replace with your video
-        st.caption("Présentation du laboratoire et de l'ASAP 2020")
