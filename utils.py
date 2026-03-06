@@ -319,3 +319,34 @@ def send_completion_email(sample_name: str, recipient: str, request_id: str):
         server.starttls()
         server.login(sender, password)
         server.send_message(msg)
+# ---------- Gestion des actualités ----------
+def get_all_news():
+    supabase = init_supabase()
+    response = supabase.table("news").select("*").order("created_at", desc=True).execute()
+    return response.data
+
+def add_news(title, content, image_url=""):
+    supabase = init_supabase()
+    data = {
+        "title": title,
+        "content": content,
+        "image_url": image_url
+    }
+    response = supabase.table("news").insert(data).execute()
+    return response.data
+
+def update_news(news_id, title, content, image_url):
+    supabase = init_supabase()
+    data = {
+        "title": title,
+        "content": content,
+        "image_url": image_url,
+        "updated_at": datetime.now().isoformat()
+    }
+    response = supabase.table("news").update(data).eq("id", news_id).execute()
+    return response.data
+
+def delete_news(news_id):
+    supabase = init_supabase()
+    response = supabase.table("news").delete().eq("id", news_id).execute()
+    return response.data        
