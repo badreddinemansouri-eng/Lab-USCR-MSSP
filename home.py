@@ -40,11 +40,14 @@ def show_home():
             <span style="color:var(--text-secondary);">Responsable des analyses</span></p>
             <p><strong>Pr. Lassaad BEN HAMMOUDA</strong><br>
             <span style="color:var(--text-secondary);">Directeur de l'unité</span></p>
-            <p style="margin-top:1.5rem;">
-                <a href="#" class="custom-button">""" + get_text("make_request", st.session_state.lang) + """ →</a>
-            </p>
-        </div>
         """, unsafe_allow_html=True)
+        
+        # Bouton fonctionnel pour aller à la page Demande
+        if st.button(get_text("make_request", st.session_state.lang) + " →", key="home_request_btn"):
+            st.session_state.page = get_text("nav_request", st.session_state.lang)
+            st.rerun()
+        
+        st.markdown("</div>", unsafe_allow_html=True)
     
     st.markdown("---")
     
