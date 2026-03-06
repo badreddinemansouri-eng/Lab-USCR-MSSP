@@ -1,20 +1,23 @@
 import streamlit as st
+import folium
+from streamlit_folium import folium_static
+from utils_i18n import get_text
 
 def show_contact():
     st.markdown("""
-    <div class="main-header">
-        <h1>📞 Contactez-nous</h1>
+    <div class="main-header hero" style="background:linear-gradient(135deg, #1e2b4f 0%, #2a3f6e 100%);">
+        <h1>📞 """ + get_text("contact_us", st.session_state.lang) + """</h1>
         <p>Notre équipe est à votre disposition</p>
     </div>
     """, unsafe_allow_html=True)
     
-    col1, col2 = st.columns([1, 1])
+    col1, col2 = st.columns(2)
     
     with col1:
         st.markdown("""
         <div class="info-card">
             <h3>📍 Adresse</h3>
-            <p><strong>Uni té de Service commune de Recherche</strong><br>
+            <p><strong>Unité de Service commune de Recherche</strong><br>
             Mesure de Surface Spécifique et de Porosité<br><br>
             <strong>Université de Tunis El Manar</strong><br>
             Campus Universitaire Farhat Hached<br>
@@ -39,8 +42,17 @@ def show_contact():
         <div class="info-card">
             <h3>🗺️ Plan d'accès</h3>
         """, unsafe_allow_html=True)
-        # Utilisez votre propre image ou une capture d'écran Google Maps
-        st.image("https://i.imgur.com/dCemmMW.png", use_column_width=True)  # À remplacer par votre image
+        
+        # Carte interactive avec Folium
+        m = folium.Map(location=[36.8275, 10.1658], zoom_start=15, tiles="OpenStreetMap")
+        folium.Marker(
+            [36.8275, 10.1658],
+            popup="Faculté des Sciences de Tunis",
+            tooltip="Notre laboratoire",
+            icon=folium.Icon(color="blue", icon="flask", prefix="fa")
+        ).add_to(m)
+        folium_static(m, width=600, height=400)
+        
         st.markdown("</div>", unsafe_allow_html=True)
         
         st.markdown("""
