@@ -58,6 +58,7 @@ st.markdown(f"""
         box-shadow: var(--shadow);
         padding-top: 1rem;
     }}
+    /* Barre de navigation horizontale */
     .navbar {{
         display: flex;
         justify-content: space-between;
@@ -69,11 +70,14 @@ st.markdown(f"""
         margin-bottom: 2rem;
         border: 1px solid var(--card-border);
         flex-wrap: wrap;
+        gap: 1rem;
     }}
     .nav-links {{
         display: flex;
         gap: 0.5rem;
         flex-wrap: wrap;
+        justify-content: center;  /* Centre les boutons horizontalement */
+        flex: 1;                  /* Prend tout l'espace disponible pour pousser les contrôles à droite */
     }}
     .nav-links .stButton > button {{
         background: transparent;
@@ -84,6 +88,7 @@ st.markdown(f"""
         font-weight: 500;
         box-shadow: none;
         width: auto;
+        white-space: nowrap;
     }}
     .nav-links .stButton > button:hover {{
         background: rgba(26, 54, 93, 0.1);
@@ -91,6 +96,14 @@ st.markdown(f"""
     .nav-controls {{
         display: flex;
         gap: 0.5rem;
+        align-items: center;
+    }}
+    .nav-controls .stButton > button,
+    .nav-controls .stSelectbox {{
+        min-width: 40px;
+        padding: 0.3rem 0.8rem;
+        font-size: 0.9rem;
+        margin: 0;
     }}
     .hero {{
         position: relative;
@@ -148,14 +161,19 @@ st.markdown(f"""
     @media (max-width: 768px) {{
         .navbar {{
             flex-direction: column;
-            gap: 1rem;
+            align-items: stretch;
+        }}
+        .nav-links {{
+            justify-content: center;
+        }}
+        .nav-controls {{
+            justify-content: center;
         }}
         .hero {{ padding: 2rem 1rem; }}
     }}
 </style>
 """, unsafe_allow_html=True)
 
-# Barre de navigation horizontale
 nav_labels = [
     get_text("nav_home", st.session_state.lang),
     get_text("nav_analyses", st.session_state.lang),
@@ -173,7 +191,6 @@ with st.container():
             st.session_state.page = label
             st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
-    
     st.markdown('<div class="nav-controls">', unsafe_allow_html=True)
     col_theme, col_lang = st.columns(2)
     with col_theme:
@@ -181,14 +198,14 @@ with st.container():
             toggle_theme()
             st.rerun()
     with col_lang:
-        lang = st.selectbox("Langue", ["fr", "en"], index=0 if st.session_state.lang == "fr" else 1, label_visibility="collapsed", key="lang_selector")
+        lang = st.selectbox("Langue", ["fr", "en"], index=0 if st.session_state.lang == "fr" else 1,
+                            label_visibility="collapsed", key="lang_selector")
         if lang != st.session_state.lang:
             st.session_state.lang = lang
             st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# Routage
 if st.session_state.page == get_text("nav_home", st.session_state.lang):
     show_home()
 elif st.session_state.page == get_text("nav_analyses", st.session_state.lang):
