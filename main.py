@@ -30,57 +30,7 @@ if "page" not in st.session_state:
 def toggle_theme():
     st.session_state.theme = "dark" if st.session_state.theme == "light" else "light"
 
-# CSS minimal pour la barre de navigation (juste pour que les colonnes se comportent bien)
-st.markdown("""
-<style>
-    /* Réinitialiser les marges/paddings des colonnes pour la barre de navigation */
-    .nav-row {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
-    }
-    .nav-item {
-        flex: 0 0 auto;
-    }
-    .nav-item .stButton > button {
-        background: transparent;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 40px;
-        font-weight: 500;
-        width: auto;
-    }
-    .nav-item .stButton > button:hover {
-        background: rgba(0,0,0,0.05);
-    }
-    .control-group {
-        display: flex;
-        gap: 0.5rem;
-        margin-left: auto;
-        align-items: center;
-    }
-    .control-group .stButton > button,
-    .control-group .stSelectbox {
-        min-width: 40px;
-        padding: 0.3rem 0.8rem;
-        font-size: 0.9rem;
-    }
-    @media (max-width: 768px) {
-        .nav-row {
-            justify-content: center;
-        }
-        .control-group {
-            margin-left: 0;
-            width: 100%;
-            justify-content: center;
-        }
-    }
-</style>
-""", unsafe_allow_html=True)
-
-# Libellés de navigation
+# Liste des libellés de navigation
 nav_labels = [
     get_text("nav_home", st.session_state.lang),
     get_text("nav_analyses", st.session_state.lang),
@@ -90,33 +40,29 @@ nav_labels = [
     get_text("nav_admin", st.session_state.lang)
 ]
 
-# Construction de la barre de navigation avec une ligne flex
-st.markdown('<div class="nav-row">', unsafe_allow_html=True)
+# Créer une ligne de colonnes : 6 boutons + 2 contrôles
+cols = st.columns(len(nav_labels) + 2)
 
-# Boutons de navigation
-for label in nav_labels:
-    st.markdown('<div class="nav-item">', unsafe_allow_html=True)
-    if st.button(label, key=f"nav_{label}"):
-        st.session_state.page = label
-        st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
+# Placer les boutons de navigation dans les premières colonnes
+for i, label in enumerate(nav_labels):
+    with cols[i]:
+        if st.button(label, key=f"nav_{i}"):
+            st.session_state.page = label
+            st.rerun()
 
-# Contrôles (thème et langue) dans un groupe à droite
-st.markdown('<div class="control-group">', unsafe_allow_html=True)
-col_theme, col_lang = st.columns(2)
-with col_theme:
+# Contrôle thème (avant-dernière colonne)
+with cols[-2]:
     if st.button("☀️" if st.session_state.theme == "light" else "🌙", key="theme_btn"):
         toggle_theme()
         st.rerun()
-with col_lang:
+
+# Contrôle langue (dernière colonne)
+with cols[-1]:
     lang = st.selectbox("Langue", ["fr", "en"], index=0 if st.session_state.lang == "fr" else 1,
                         label_visibility="collapsed", key="lang_selector")
     if lang != st.session_state.lang:
         st.session_state.lang = lang
         st.rerun()
-st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown('</div>', unsafe_allow_html=True)
 
 # Routage
 if st.session_state.page == get_text("nav_home", st.session_state.lang):
