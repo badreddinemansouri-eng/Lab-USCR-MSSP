@@ -40,7 +40,7 @@ nav_labels = [
     get_text("nav_admin", st.session_state.lang)
 ]
 
-# Boutons cachés (pour la navigation)
+# Boutons cachés (un seul ensemble, pas de doublon)
 for i, label in enumerate(nav_labels):
     st.markdown(f'<div id="nav-btn-{i}" style="display:none;">', unsafe_allow_html=True)
     if st.button(label, key=f"hidden_nav_{i}"):
@@ -48,7 +48,7 @@ for i, label in enumerate(nav_labels):
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-# CSS global (identique à main (5).py + styles pour les boutons personnalisés)
+# CSS global (identique à main (5).py, avec ajout pour les boutons actifs)
 st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap');
@@ -64,7 +64,6 @@ st.markdown(f"""
         --shadow: {'0 10px 30px rgba(0,0,0,0.05)' if st.session_state.theme == 'light' else '0 10px 30px rgba(0,0,0,0.3)'};
         --blur-amount: 10px;
     }}
-
     body {{
         background-color: var(--bg-primary);
         color: var(--text-primary);
@@ -121,7 +120,7 @@ st.markdown(f"""
         box-shadow: 0 30px 60px rgba(0,0,0,0.15);
     }}
 
-    /* Style des boutons personnalisés (copié de st.button) */
+    /* Boutons personnalisés (style identique aux st.button de main (5).py) */
     .custom-btn {{
         background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
         color: white;
@@ -136,19 +135,17 @@ st.markdown(f"""
         text-align: center;
         display: inline-block;
         font-size: 1rem;
+        border: 2px solid transparent;
     }}
     .custom-btn:hover {{
         transform: translateY(-3px);
         box-shadow: 0 15px 30px rgba(26,54,93,0.3);
         filter: brightness(1.1);
     }}
+    /* Indicateur de page active : bordure blanche et ombre renforcée */
     .custom-btn.active {{
-        background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-    }}
-    /* Conteneur des boutons */
-    .btn-container {{
-        width: 100%;
+        border: 2px solid white;
+        box-shadow: 0 8px 20px rgba(255,255,255,0.3);
     }}
     /* Sélecteur de langue */
     .lang-select {{
@@ -160,22 +157,20 @@ st.markdown(f"""
         border: 1px solid var(--card-border);
         border-radius: 40px;
     }}
-    /* Responsive */
     @media (max-width: 768px) {{
         .hero {{ padding: 2rem 1rem; }}
     }}
 </style>
 """, unsafe_allow_html=True)
 
-# Création des colonnes : une pour chaque bouton + une pour la langue
+# Barre de navigation : une seule série de colonnes
 col_ratios = [1] * len(nav_labels) + [0.3]
 cols = st.columns(col_ratios)
 
-# Affichage des boutons personnalisés
+# Boutons visibles (un par colonne)
 for i, label in enumerate(nav_labels):
     with cols[i]:
         active_class = "active" if st.session_state.page == label else ""
-        # On utilise un div cliquable qui déclenche le bouton caché
         st.markdown(f'<div class="custom-btn {active_class}" onclick="document.getElementById(\'nav-btn-{i}\').click();">{label}</div>', unsafe_allow_html=True)
 
 # Sélecteur de langue dans la dernière colonne
