@@ -9,7 +9,6 @@ from bet import show_bet
 from porosite import show_porosite
 from isothermes import show_isothermes
 from utils_i18n import get_text
-from components import nav_link
 
 st.set_page_config(
     page_title="USR Mesure de Surface Spécifique et Porosité",
@@ -21,7 +20,7 @@ st.set_page_config(
 if not st.secrets.get("debug", False):
     st.set_option('client.showErrorDetails', False)
 
-# Initialisation des états
+# États de session
 if "theme" not in st.session_state:
     st.session_state.theme = "light"
 if "lang" not in st.session_state:
@@ -32,282 +31,184 @@ if "page" not in st.session_state:
 def toggle_theme():
     st.session_state.theme = "dark" if st.session_state.theme == "light" else "light"
 
-# CSS global ultra-moderne
+# CSS global avec styles pour menu hamburger
 st.markdown(f"""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    * {{ font-family: 'Inter', sans-serif; }}
+    body {{ background: {'#fff' if st.session_state.theme == 'light' else '#1a1a2e'}; }}
+    .stApp {{ background: inherit; }}
 
-    :root {{
-        --bg-primary: {'#ffffff' if st.session_state.theme == 'light' else '#0a0a0a'};
-        --bg-secondary: {'#f8fafc' if st.session_state.theme == 'light' else '#111111'};
-        --text-primary: {'#1a1a1a' if st.session_state.theme == 'light' else '#ffffff'};
-        --text-secondary: {'#64748b' if st.session_state.theme == 'light' else '#a0a0a0'};
-        --accent: #3b82f6;
-        --accent-light: #60a5fa;
-        --accent-dark: #2563eb;
-        --card-bg: {'rgba(255,255,255,0.8)' if st.session_state.theme == 'light' else 'rgba(20,20,20,0.8)'};
-        --card-border: {'rgba(0,0,0,0.05)' if st.session_state.theme == 'light' else 'rgba(255,255,255,0.05)'};
-        --shadow: {'0 25px 50px -12px rgba(0,0,0,0.25)' if st.session_state.theme == 'light' else '0 25px 50px -12px rgba(0,0,0,0.5)'};
-        --blur-amount: 12px;
-        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }}
-
-    * {{
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }}
-
-    body {{
-        font-family: 'Inter', sans-serif;
-        background-color: var(--bg-primary);
-        color: var(--text-primary);
-        transition: background-color 0.3s, color 0.3s;
-        line-height: 1.6;
-    }}
-
-    .stApp {{
-        background: var(--bg-primary);
-    }}
-
-    .main .block-container {{
-        max-width: 1400px;
-        padding: 2rem;
-        margin: 0 auto;
-        background: var(--bg-primary);
-        border-radius: 32px;
-        box-shadow: var(--shadow);
-    }}
-
-    /* Barre de navigation ultra-moderne */
-    .nav-bar {{
+    /* Barre de navigation desktop */
+    .desktop-nav {{
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: var(--card-bg);
-        backdrop-filter: blur(var(--blur-amount));
-        border: 1px solid var(--card-border);
-        border-radius: 100px;
-        padding: 0.5rem 0.5rem;
-        margin-bottom: 3rem;
-        box-shadow: var(--shadow);
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 40px;
+        padding: 0.5rem 1rem;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(0,0,0,0.05);
     }}
-
-    .nav-links {{
+    .desktop-nav .nav-links {{
         display: flex;
-        gap: 0.25rem;
+        gap: 0.5rem;
         flex-wrap: wrap;
     }}
-
-    .nav-item {{
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.75rem 1.5rem;
-        border-radius: 100px;
-        color: var(--text-secondary);
-        transition: var(--transition);
-        cursor: pointer;
-        font-weight: 500;
-    }}
-
-    .nav-item:hover {{
-        background: rgba(59, 130, 246, 0.1);
-        color: var(--accent);
-    }}
-
-    .nav-item.active {{
-        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-        color: white;
-        box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.5);
-    }}
-
-    .nav-icon {{
-        font-size: 1.2rem;
-    }}
-
-    .nav-controls {{
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-    }}
-
-    .theme-toggle, .lang-select {{
-        background: var(--card-bg);
-        border: 1px solid var(--card-border);
-        border-radius: 100px;
-        padding: 0.5rem 1rem;
-        color: var(--text-primary);
-        cursor: pointer;
-        transition: var(--transition);
-        font-size: 0.9rem;
-    }}
-
-    .theme-toggle:hover, .lang-select:hover {{
-        background: var(--accent);
-        color: white;
-        border-color: var(--accent);
-    }}
-
-    /* Hero section */
-    .hero {{
-        text-align: center;
-        padding: 4rem 2rem;
-        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-        border-radius: 48px;
-        color: white;
-        margin-bottom: 3rem;
-        animation: fadeInUp 0.8s ease;
-    }}
-
-    .hero h1 {{
-        font-size: 3rem;
-        font-weight: 800;
-        margin-bottom: 1rem;
-        letter-spacing: -0.02em;
-    }}
-
-    .hero-subtitle {{
-        font-size: 1.5rem;
-        opacity: 0.9;
-        margin-bottom: 1rem;
-    }}
-
-    .hero-description {{
-        font-size: 1.1rem;
-        opacity: 0.8;
-        max-width: 600px;
-        margin: 0 auto;
-    }}
-
-    /* Cartes */
-    .info-card, .analysis-card {{
-        background: var(--card-bg);
-        backdrop-filter: blur(var(--blur-amount));
-        border: 1px solid var(--card-border);
-        border-radius: 32px;
-        padding: 2rem;
-        box-shadow: var(--shadow);
-        transition: var(--transition);
-        animation: fadeInUp 0.8s ease;
-    }}
-
-    .info-card:hover, .analysis-card:hover {{
-        transform: translateY(-8px);
-        box-shadow: 0 30px 60px -15px rgba(0,0,0,0.3);
-    }}
-
-    .analysis-card {{
-        cursor: pointer;
-    }}
-
-    .analysis-card img {{
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-        border-radius: 24px;
-        margin-bottom: 1.5rem;
-        transition: var(--transition);
-    }}
-
-    .analysis-card:hover img {{
-        transform: scale(1.05);
-    }}
-
-    .badge {{
-        display: inline-block;
-        background: var(--accent);
-        color: white;
-        padding: 0.3rem 1rem;
-        border-radius: 100px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        margin-top: 1rem;
-    }}
-
-    /* Animations */
-    @keyframes fadeInUp {{
-        from {{
-            opacity: 0;
-            transform: translateY(20px);
-        }}
-        to {{
-            opacity: 1;
-            transform: translateY(0);
-        }}
-    }}
-
-    @keyframes pulse {{
-        0%, 100% {{
-            transform: scale(1);
-        }}
-        50% {{
-            transform: scale(1.05);
-        }}
-    }}
-
-    /* Boutons */
-    .stButton > button {{
-        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-        color: white;
+    .desktop-nav .stButton > button {{
+        background: transparent;
         border: none;
-        border-radius: 100px;
-        padding: 0.8rem 2rem;
-        font-weight: 600;
-        transition: var(--transition);
-        box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.5);
+        color: {'#1e2b4f' if st.session_state.theme == 'light' else '#fff'};
+        padding: 0.5rem 1.2rem;
+        border-radius: 40px;
+        font-weight: 500;
+        width: auto;
+        box-shadow: none;
+    }}
+    .desktop-nav .stButton > button:hover {{
+        background: rgba(26,54,93,0.1);
+    }}
+    .desktop-nav .nav-controls {{
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }}
+    .desktop-nav .nav-controls .stButton > button,
+    .desktop-nav .nav-controls .stSelectbox {{
+        min-width: 40px;
+        padding: 0.3rem 0.8rem;
+        font-size: 0.9rem;
+        background: transparent;
+        color: {'#1e2b4f' if st.session_state.theme == 'light' else '#fff'};
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 40px;
+    }}
+
+    /* Header mobile */
+    .mobile-header {{
+        display: none;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }}
+    .hamburger {{
+        font-size: 2rem;
+        cursor: pointer;
+        background: none;
+        border: none;
+        color: {'#1e2b4f' if st.session_state.theme == 'light' else '#fff'};
+    }}
+
+    /* Menu overlay */
+    .mobile-menu {{
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
         width: 100%;
-        border: 1px solid rgba(255,255,255,0.1);
+        height: 100%;
+        background: {'#fff' if st.session_state.theme == 'light' else '#1a1a2e'};
+        z-index: 1000;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+    }}
+    .mobile-menu.open {{
+        display: flex;
+    }}
+    .mobile-menu .mobile-link {{
+        font-size: 1.5rem;
+        color: {'#1e2b4f' if st.session_state.theme == 'light' else '#fff'};
+        text-decoration: none;
+        cursor: pointer;
+        padding: 0.5rem 2rem;
+        border-radius: 40px;
+        transition: background 0.3s;
+    }}
+    .mobile-menu .mobile-link:hover {{
+        background: rgba(26,54,93,0.1);
+    }}
+    .close-btn {{
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        font-size: 2rem;
+        cursor: pointer;
+        color: {'#1e2b4f' if st.session_state.theme == 'light' else '#fff'};
     }}
 
-    .stButton > button:hover {{
-        transform: translateY(-3px);
-        box-shadow: 0 20px 30px -5px rgba(59, 130, 246, 0.7);
-        filter: brightness(1.1);
-    }}
-
-    /* Responsive */
     @media (max-width: 768px) {{
-        .nav-bar {{
-            flex-direction: column;
-            border-radius: 40px;
-            padding: 1rem;
+        .desktop-nav {{
+            display: none;
         }}
-        .nav-links {{
-            justify-content: center;
-            width: 100%;
-        }}
-        .nav-controls {{
-            width: 100%;
-            justify-content: center;
-            margin-top: 0.5rem;
-        }}
-        .hero h1 {{
-            font-size: 2rem;
-        }}
-        .hero-subtitle {{
-            font-size: 1.2rem;
+        .mobile-header {{
+            display: flex;
         }}
     }}
 </style>
 """, unsafe_allow_html=True)
 
-# Barre de navigation
-nav_items = [
-    (get_text("nav_home", st.session_state.lang), "nav_home", "🏠"),
-    (get_text("nav_analyses", st.session_state.lang), "nav_analyses", "🔬"),
-    (get_text("nav_request", st.session_state.lang), "nav_request", "📝"),
-    (get_text("nav_resources", st.session_state.lang), "nav_resources", "📚"),
-    (get_text("nav_contact", st.session_state.lang), "nav_contact", "📞"),
-    (get_text("nav_admin", st.session_state.lang), "nav_admin", "🔐")
+# Liste des libellés de navigation
+nav_labels = [
+    get_text("nav_home", st.session_state.lang),
+    get_text("nav_analyses", st.session_state.lang),
+    get_text("nav_request", st.session_state.lang),
+    get_text("nav_resources", st.session_state.lang),
+    get_text("nav_contact", st.session_state.lang),
+    get_text("nav_admin", st.session_state.lang)
 ]
 
+# --- Boutons cachés pour la navigation (seront déclenchés par JavaScript) ---
+for i, label in enumerate(nav_labels):
+    with st.container():
+        # Chaque bouton est caché via CSS
+        st.markdown(f'<div id="nav-btn-{i}" style="display:none;">', unsafe_allow_html=True)
+        if st.button(label, key=f"hidden_nav_{i}"):
+            st.session_state.page = label
+            st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+
+# --- En-tête mobile avec hamburger et contrôles ---
+st.markdown('<div class="mobile-header">', unsafe_allow_html=True)
+st.markdown('<button class="hamburger" onclick="document.getElementById(\'mobile-menu\').classList.add(\'open\')">☰</button>', unsafe_allow_html=True)
+st.markdown('<div style="flex-grow:1;"></div>', unsafe_allow_html=True)
+# Contrôles dans l'en-tête mobile
+col_theme_mobile, col_lang_mobile = st.columns(2)
+with col_theme_mobile:
+    if st.button("☀️" if st.session_state.theme == "light" else "🌙", key="theme_btn_mobile"):
+        toggle_theme()
+        st.rerun()
+with col_lang_mobile:
+    lang = st.selectbox("Langue", ["fr", "en"], index=0 if st.session_state.lang == "fr" else 1,
+                        label_visibility="collapsed", key="lang_selector_mobile")
+    if lang != st.session_state.lang:
+        st.session_state.lang = lang
+        st.rerun()
+st.markdown('</div>', unsafe_allow_html=True)
+
+# --- Overlay du menu mobile ---
+mobile_menu_html = '<div id="mobile-menu" class="mobile-menu">'
+mobile_menu_html += '<span class="close-btn" onclick="document.getElementById(\'mobile-menu\').classList.remove(\'open\')">&times;</span>'
+for i, label in enumerate(nav_labels):
+    # Le lien appelle le clic sur le bouton caché et ferme le menu
+    mobile_menu_html += f'''
+    <a class="mobile-link" onclick="document.getElementById('nav-btn-{i}').click(); document.getElementById('mobile-menu').classList.remove('open');">
+        {label}
+    </a>
+    '''
+mobile_menu_html += '</div>'
+st.markdown(mobile_menu_html, unsafe_allow_html=True)
+
+# --- Barre de navigation desktop ---
 with st.container():
-    st.markdown('<div class="nav-bar">', unsafe_allow_html=True)
+    st.markdown('<div class="desktop-nav">', unsafe_allow_html=True)
     st.markdown('<div class="nav-links">', unsafe_allow_html=True)
-    for label, key, icon in nav_items:
-        nav_link(label, key, icon)
+    for label in nav_labels:
+        if st.button(label, key=f"nav_{label}"):
+            st.session_state.page = label
+            st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div class="nav-controls">', unsafe_allow_html=True)
     col_theme, col_lang = st.columns(2)
@@ -325,15 +226,15 @@ with st.container():
     st.markdown('</div>', unsafe_allow_html=True)
 
 # Routage
-if st.session_state.page == "nav_home":
+if st.session_state.page == get_text("nav_home", st.session_state.lang):
     show_home()
-elif st.session_state.page == "nav_analyses":
+elif st.session_state.page == get_text("nav_analyses", st.session_state.lang):
     show_analyses()
-elif st.session_state.page == "nav_request":
+elif st.session_state.page == get_text("nav_request", st.session_state.lang):
     show_request()
-elif st.session_state.page == "nav_resources":
+elif st.session_state.page == get_text("nav_resources", st.session_state.lang):
     show_resources()
-elif st.session_state.page == "nav_contact":
+elif st.session_state.page == get_text("nav_contact", st.session_state.lang):
     show_contact()
-elif st.session_state.page == "nav_admin":
+elif st.session_state.page == get_text("nav_admin", st.session_state.lang):
     show_admin()
