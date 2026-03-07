@@ -57,21 +57,7 @@ st.markdown(f"""
     body {{ background: {'#fff' if st.session_state.theme == 'light' else '#1a1a2e'}; }}
     .stApp {{ background: inherit; }}
 
-    /* Boutons de navigation */
-    .nav-btn {{
-        background: transparent;
-        border: none;
-        color: {'#1e2b4f' if st.session_state.theme == 'light' else '#fff'};
-        padding: 0.5rem 1.2rem;
-        border-radius: 40px;
-        font-weight: 500;
-        cursor: pointer;
-    }}
-    .nav-btn:hover {{
-        background: rgba(26,54,93,0.1);
-    }}
-
-    /* Desktop : barre horizontale */
+    /* Barre de navigation desktop (horizontale) */
     .desktop-nav {{
         display: flex;
         justify-content: space-between;
@@ -83,8 +69,41 @@ st.markdown(f"""
         margin-bottom: 2rem;
         border: 1px solid rgba(0,0,0,0.05);
     }}
+    .desktop-nav .nav-links {{
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }}
+    .desktop-nav .nav-links .stButton > button {{
+        background: transparent;
+        border: none;
+        color: {'#1e2b4f' if st.session_state.theme == 'light' else '#fff'};
+        padding: 0.5rem 1.2rem;
+        border-radius: 40px;
+        font-weight: 500;
+        box-shadow: none;
+        width: auto;
+    }}
+    .desktop-nav .nav-links .stButton > button:hover {{
+        background: rgba(26,54,93,0.1);
+    }}
+    .desktop-nav .nav-controls {{
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }}
+    .desktop-nav .nav-controls .stButton > button,
+    .desktop-nav .nav-controls .stSelectbox {{
+        min-width: 40px;
+        padding: 0.3rem 0.8rem;
+        font-size: 0.9rem;
+        background: transparent;
+        color: {'#1e2b4f' if st.session_state.theme == 'light' else '#fff'};
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 40px;
+    }}
 
-    /* Mobile : hamburger et menu */
+    /* Header mobile (visible uniquement sur petits écrans) */
     .mobile-header {{
         display: none;
         justify-content: space-between;
@@ -97,7 +116,10 @@ st.markdown(f"""
         background: none;
         border: none;
         color: {'#1e2b4f' if st.session_state.theme == 'light' else '#fff'};
+        padding: 0 1rem;
     }}
+
+    /* Menu mobile (plein écran) */
     .mobile-menu {{
         position: fixed;
         top: 0;
@@ -118,6 +140,17 @@ st.markdown(f"""
         right: 30px;
         font-size: 2rem;
         cursor: pointer;
+        color: {'#1e2b4f' if st.session_state.theme == 'light' else '#fff'};
+    }}
+    .mobile-menu .stButton > button {{
+        font-size: 1.5rem;
+        background: transparent;
+        border: none;
+        color: {'#1e2b4f' if st.session_state.theme == 'light' else '#fff'};
+        padding: 0.5rem 2rem;
+        border-radius: 40px;
+        width: auto;
+        box-shadow: none;
     }}
 
     @media (max-width: 768px) {{
@@ -133,7 +166,7 @@ st.markdown(f"""
 
 # --- En-tête mobile (visible sur petits écrans) ---
 st.markdown('<div class="mobile-header">', unsafe_allow_html=True)
-if st.button("☰", key="hamburger_btn"):
+if st.button("☰", key="hamburger"):
     open_menu()
     st.rerun()
 st.markdown('<div style="flex-grow:1;"></div>', unsafe_allow_html=True)
@@ -154,7 +187,7 @@ st.markdown('</div>', unsafe_allow_html=True)
 if st.session_state.mobile_menu_open:
     with st.container():
         st.markdown('<div class="mobile-menu">', unsafe_allow_html=True)
-        if st.button("✕", key="close_menu_btn"):
+        if st.button("✕", key="close_menu"):
             close_menu()
             st.rerun()
         for i, label in enumerate(nav_labels):
@@ -167,14 +200,13 @@ if st.session_state.mobile_menu_open:
 # --- Barre de navigation desktop (visible sur grands écrans) ---
 with st.container():
     st.markdown('<div class="desktop-nav">', unsafe_allow_html=True)
-    # Utilisation de colonnes pour aligner horizontalement
-    cols = st.columns(len(nav_labels))
+    st.markdown('<div class="nav-links">', unsafe_allow_html=True)
     for i, label in enumerate(nav_labels):
-        with cols[i]:
-            if st.button(label, key=f"desktop_nav_{i}"):
-                st.session_state.page = label
-                st.rerun()
-    # Contrôles à droite
+        if st.button(label, key=f"desktop_nav_{i}"):
+            st.session_state.page = label
+            st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div class="nav-controls">', unsafe_allow_html=True)
     col_theme, col_lang = st.columns(2)
     with col_theme:
         if st.button("☀️" if st.session_state.theme == "light" else "🌙", key="theme_desktop"):
@@ -186,6 +218,7 @@ with st.container():
         if lang != st.session_state.lang:
             st.session_state.lang = lang
             st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 # --- Routage ---
