@@ -133,11 +133,11 @@ st.markdown(f"""
         background: #ffaa00;
         border-radius: 2px;
     }}
-    /* Sélecteur de langue plus petit */
-    .lang-col .stSelectbox {{
-        transform: scale(0.7);
+    /* Colonne langue très petite */
+    .lang-col {{
+        transform: scale(0.5);
         transform-origin: left center;
-        margin-left: -10px; /* pour compenser l'espace */
+        width: 50%;
     }}
     @media (max-width: 768px) {{
         .hero {{ padding: 2rem 1rem; }}
@@ -145,7 +145,10 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-cols = st.columns(len(nav_labels) + 1)
+# Ratios des colonnes : boutons = 1, langue = 0.2
+ratios = [1] * len(nav_labels) + [0.2]
+cols = st.columns(ratios)
+
 for i, label in enumerate(nav_labels):
     with cols[i]:
         if st.button(label, key=f"nav_{i}", use_container_width=True):
