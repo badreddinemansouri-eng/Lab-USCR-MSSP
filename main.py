@@ -135,8 +135,9 @@ st.markdown(f"""
     }}
     /* Sélecteur de langue plus petit */
     .lang-col .stSelectbox {{
-        transform: scale(0.8);
+        transform: scale(0.7);
         transform-origin: left center;
+        margin-left: -10px; /* pour compenser l'espace */
     }}
     @media (max-width: 768px) {{
         .hero {{ padding: 2rem 1rem; }}
