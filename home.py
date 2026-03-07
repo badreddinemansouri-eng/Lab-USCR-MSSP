@@ -1,30 +1,28 @@
 import streamlit as st
 from utils_i18n import get_text
 from utils import get_all_news
+from components import hero, info_card
 
 def show_home():
-    st.markdown("""
-    <div class="hero">
-        <h1>🧪 Unité de Service commune de Recherche</h1>
-        <p style="font-size:1.5rem;">Mesure de Surface Spécifique et de Porosité</p>
-        <p style="font-size:1.2rem; margin-top:1rem;">Analyse texturale de précision avec le Micromeritics ASAP 2020</p>
-    </div>
-    """, unsafe_allow_html=True)
+    hero(
+        "🧪 Unité de Service commune de Recherche",
+        "Mesure de Surface Spécifique et de Porosité",
+        "Analyse texturale de précision avec le Micromeritics ASAP 2020"
+    )
     
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        with st.container():
-            st.markdown("## 🎯 " + get_text("welcome", st.session_state.lang))
-            st.markdown("""
-            Notre unité est dédiée à la caractérisation texturale des matériaux poreux et divisés. 
+        info_card(
+            "🎯 " + get_text("welcome", st.session_state.lang),
+            """Notre unité est dédiée à la caractérisation texturale des matériaux poreux et divisés. 
             Nous mettons à disposition des chercheurs et industriels un équipement de pointe pour 
             l'analyse de surface spécifique et de porosité.
             
             **Notre mission :** Fournir des mesures précises et reproductibles pour accompagner 
-            vos projets de recherche et développement.
-            """)
-            
+            vos projets de recherche et développement."""
+        )
+        
         col_stats1, col_stats2, col_stats3 = st.columns(3)
         with col_stats1:
             st.metric("Analyses réalisées", "1500+", "+12%")
@@ -43,37 +41,31 @@ def show_home():
             <span style="color:var(--text-secondary);">Directeur de l'unité</span></p>
         """, unsafe_allow_html=True)
         
-        # Bouton "Faire une demande" avec animation
         st.markdown("""
         <style>
             #home_request_btn {
-                animation: pulse 2s infinite !important;
+                animation: pulse 2s infinite;
                 background: linear-gradient(135deg, #ff6b6b, #ee5a24) !important;
                 border: none !important;
                 color: white !important;
                 font-weight: bold !important;
                 font-size: 1.2rem !important;
                 padding: 0.8rem 2rem !important;
-                border-radius: 50px !important;
+                border-radius: 100px !important;
                 width: 100% !important;
                 margin-top: 1rem !important;
                 cursor: pointer !important;
-                transition: all 0.3s !important;
+                transition: var(--transition) !important;
             }
             #home_request_btn:hover {
                 transform: scale(1.05) !important;
                 box-shadow: 0 10px 30px rgba(255, 107, 107, 0.5) !important;
             }
-            @keyframes pulse {
-                0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
-                70% { transform: scale(1.05); box-shadow: 0 0 20px 10px rgba(255, 107, 107, 0.3); }
-                100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
-            }
         </style>
         """, unsafe_allow_html=True)
         
         if st.button(get_text("make_request", st.session_state.lang) + " →", key="home_request_btn"):
-            st.session_state.page = get_text("nav_request", st.session_state.lang)
+            st.session_state.page = "nav_request"
             st.rerun()
         
         st.markdown("</div>", unsafe_allow_html=True)
@@ -112,30 +104,39 @@ def show_home():
     
     with col_ana1:
         st.markdown("""
-        <div class="analysis-card" style="cursor:default;">
+        <div class="analysis-card" onclick="document.getElementById('goto_bet').click()">
             <h4>📈 Surface spécifique</h4>
             <p>Méthode BET multipoints pour une mesure précise de la surface spécifique des matériaux.</p>
-            <p><span class="badge">Catalyseurs, adsorbants, nanomatériaux</span></p>
+            <span class="badge">Catalyseurs, adsorbants, nanomatériaux</span>
         </div>
         """, unsafe_allow_html=True)
+        if st.button("Voir BET", key="goto_bet"):
+            st.session_state["analysis_page"] = "BET"
+            st.rerun()
     
     with col_ana2:
         st.markdown("""
-        <div class="analysis-card" style="cursor:default;">
+        <div class="analysis-card" onclick="document.getElementById('goto_porosite').click()">
             <h4>🕳️ Porosité</h4>
             <p>Distribution de taille des pores par méthodes BJH, DFT et t-plot.</p>
-            <p><span class="badge">Zéolithes, MOFs, matériaux mésoporeux</span></p>
+            <span class="badge">Zéolithes, MOFs, matériaux mésoporeux</span>
         </div>
         """, unsafe_allow_html=True)
+        if st.button("Voir Porosité", key="goto_porosite"):
+            st.session_state["analysis_page"] = "Porosite"
+            st.rerun()
     
     with col_ana3:
         st.markdown("""
-        <div class="analysis-card" style="cursor:default;">
+        <div class="analysis-card" onclick="document.getElementById('goto_isothermes').click()">
             <h4>📊 Isothermes</h4>
             <p>Isothermes complètes d'adsorption/désorption à 77K (N₂) et 273K (CO₂).</p>
-            <p><span class="badge">Caractérisation complète de la texture</span></p>
+            <span class="badge">Caractérisation complète de la texture</span>
         </div>
         """, unsafe_allow_html=True)
+        if st.button("Voir Isothermes", key="goto_isothermes"):
+            st.session_state["analysis_page"] = "Isothermes"
+            st.rerun()
     
     st.markdown("## 🔜 Prochainement disponibles")
     
@@ -161,7 +162,6 @@ def show_home():
     
     st.markdown("## 📰 Actualités")
     
-    # Récupérer les actualités depuis Supabase
     news_list = get_all_news()
     if news_list:
         for i in range(0, len(news_list), 2):
