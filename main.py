@@ -39,15 +39,7 @@ nav_labels = [
     get_text("nav_admin", st.session_state.lang)
 ]
 
-# Boutons cachés (un seul ensemble, pas de doublon)
-for i, label in enumerate(nav_labels):
-    st.markdown(f'<div id="nav-btn-{i}" style="display:none;">', unsafe_allow_html=True)
-    if st.button(label, key=f"hidden_nav_{i}"):
-        st.session_state.page = label
-        st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# CSS global (identique à main (5).py, avec ajout pour les boutons actifs)
+# CSS global (identique à main (5).py)
 st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap');
@@ -118,9 +110,7 @@ st.markdown(f"""
         transform: translateY(-8px) scale(1.02);
         box-shadow: 0 30px 60px rgba(0,0,0,0.15);
     }}
-
-    /* Style des boutons personnalisés (identique aux st.button de main (5).py) */
-    .custom-btn {{
+    .stButton > button {{
         background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
         color: white;
         border: none;
@@ -130,30 +120,19 @@ st.markdown(f"""
         transition: all 0.3s;
         box-shadow: 0 8px 20px rgba(26,54,93,0.2);
         width: 100%;
-        cursor: pointer;
-        text-align: center;
-        display: inline-block;
-        font-size: 1rem;
     }}
-    .custom-btn:hover {{
+    .stButton > button:hover {{
         transform: translateY(-3px);
         box-shadow: 0 15px 30px rgba(26,54,93,0.3);
         filter: brightness(1.1);
     }}
-    /* Indicateur de page active : inversion du dégradé */
-    .custom-btn.active {{
-        background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-    }}
-    /* Sélecteur de langue */
-    .lang-select {{
-        min-width: 60px;
-        padding: 0.3rem 0.8rem;
-        font-size: 0.9rem;
-        background: var(--card-bg);
-        color: var(--text-primary);
-        border: 1px solid var(--card-border);
-        border-radius: 40px;
+    /* Indicateur de page active : petite pastille sous le bouton */
+    .active-indicator {{
+        height: 4px;
+        width: 80%;
+        margin: 4px auto 0;
+        background: white;
+        border-radius: 2px;
     }}
     @media (max-width: 768px) {{
         .hero {{ padding: 2rem 1rem; }}
@@ -161,17 +140,17 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-# Barre de navigation : une seule série de colonnes
-col_ratios = [1] * len(nav_labels) + [0.3]
-cols = st.columns(col_ratios)
-
-# Boutons visibles (un par colonne)
+# Barre de navigation : st.button normaux
+cols = st.columns(len(nav_labels) + 1)
 for i, label in enumerate(nav_labels):
     with cols[i]:
-        active_class = "active" if st.session_state.page == label else ""
-        st.markdown(f'<div class="custom-btn {active_class}" onclick="document.getElementById(\'nav-btn-{i}\').click();">{label}</div>', unsafe_allow_html=True)
+        if st.button(label, key=f"nav_{i}", use_container_width=True):
+            st.session_state.page = label
+            st.rerun()
+        # Indicateur visuel si c'est la page active
+        if st.session_state.page == label:
+            st.markdown('<div class="active-indicator"></div>', unsafe_allow_html=True)
 
-# Sélecteur de langue dans la dernière colonne
 with cols[-1]:
     lang = st.selectbox("Langue", ["fr", "en"], index=0 if st.session_state.lang == "fr" else 1,
                         label_visibility="collapsed", key="lang_selector")
