@@ -30,7 +30,7 @@ if "page" not in st.session_state:
 def toggle_theme():
     st.session_state.theme = "dark" if st.session_state.theme == "light" else "light"
 
-# CSS global (identique)
+# CSS global
 st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap');
@@ -134,8 +134,9 @@ nav_labels = [
     get_text("nav_admin", st.session_state.lang)
 ]
 
-# Créer des colonnes : une pour chaque bouton + une seule pour le sélecteur de langue
-cols = st.columns(len(nav_labels) + 1)
+# Créer des colonnes avec ratios : boutons = 1, langue = 0.3 (plus petite)
+col_ratios = [1] * len(nav_labels) + [0.3]
+cols = st.columns(col_ratios)
 
 # Placer les boutons de navigation dans les premières colonnes
 for i, label in enumerate(nav_labels):
@@ -144,7 +145,7 @@ for i, label in enumerate(nav_labels):
             st.session_state.page = label
             st.rerun()
 
-# Contrôle de langue dans la dernière colonne
+# Contrôle de langue dans la dernière colonne (plus petite)
 with cols[-1]:
     lang = st.selectbox("Langue", ["fr", "en"], index=0 if st.session_state.lang == "fr" else 1,
                         label_visibility="collapsed", key="lang_selector")
