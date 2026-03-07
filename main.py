@@ -30,7 +30,7 @@ if "page" not in st.session_state:
 def toggle_theme():
     st.session_state.theme = "dark" if st.session_state.theme == "light" else "light"
 
-# CSS global avec variables de thème et styles avancés
+# CSS global (uniquement pour le thème et le contenu, pas pour la barre de navigation)
 st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap');
@@ -62,61 +62,6 @@ st.markdown(f"""
         border-radius: 10px;
         max-width: 1200px;
         margin: 0 auto;
-    }}
-
-    /* Barre de navigation horizontale */
-    .nav-bar {{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        background: var(--card-bg);
-        backdrop-filter: blur(var(--blur-amount));
-        border-radius: 60px;
-        padding: 0.5rem 1rem;
-        border: 1px solid var(--card-border);
-        flex-wrap: wrap;
-        gap: 0.5rem;
-    }}
-    .nav-links {{
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-    }}
-    .nav-links .stButton > button {{
-        background: transparent;
-        color: var(--text-primary);
-        border: none;
-        padding: 0.5rem 1.2rem;
-        border-radius: 40px;
-        font-weight: 500;
-        box-shadow: none;
-        width: auto;
-        white-space: nowrap;
-    }}
-    .nav-links .stButton > button:hover {{
-        background: rgba(26, 54, 93, 0.1);
-    }}
-    .nav-controls {{
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-    }}
-    .nav-controls .stButton > button,
-    .nav-controls .stSelectbox {{
-        min-width: 40px;
-        padding: 0.3rem 0.8rem;
-        font-size: 0.9rem;
-        background: transparent;
-        color: var(--text-primary);
-        border: 1px solid var(--card-border);
-        border-radius: 40px;
-    }}
-
-    /* Héro et cartes */
-    @keyframes fadeInUp {{
-        from {{ opacity: 0; transform: translateY(20px); }}
-        to {{ opacity: 1; transform: translateY(0); }}
     }}
     .hero {{
         position: relative;
@@ -174,9 +119,6 @@ st.markdown(f"""
         filter: brightness(1.1);
     }}
     @media (max-width: 768px) {{
-        .nav-bar {{ flex-direction: column; align-items: stretch; }}
-        .nav-links {{ justify-content: center; }}
-        .nav-controls {{ justify-content: center; }}
         .hero {{ padding: 2rem 1rem; }}
     }}
 </style>
@@ -192,29 +134,27 @@ nav_labels = [
     get_text("nav_admin", st.session_state.lang)
 ]
 
-# Barre de navigation horizontale
-with st.container():
-    st.markdown('<div class="nav-bar">', unsafe_allow_html=True)
-    st.markdown('<div class="nav-links">', unsafe_allow_html=True)
-    for label in nav_labels:
-        if st.button(label, key=f"nav_{label}"):
+# Créer des colonnes : une pour chaque bouton + deux pour les contrôles
+cols = st.columns(len(nav_labels) + 2)
+
+# Placer les boutons de navigation dans les premières colonnes
+for i, label in enumerate(nav_labels):
+    with cols[i]:
+        if st.button(label, key=f"nav_{i}"):
             st.session_state.page = label
             st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('<div class="nav-controls">', unsafe_allow_html=True)
-    col_theme, col_lang = st.columns(2)
-    with col_theme:
-        if st.button("☀️" if st.session_state.theme == "light" else "🌙", key="theme_btn"):
-            toggle_theme()
-            st.rerun()
-    with col_lang:
-        lang = st.selectbox("Langue", ["fr", "en"], index=0 if st.session_state.lang == "fr" else 1,
-                            label_visibility="collapsed", key="lang_selector")
-        if lang != st.session_state.lang:
-            st.session_state.lang = lang
-            st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+
+# Dernière colonne pour les contrôles
+with cols[-2]:
+    if st.button("☀️" if st.session_state.theme == "light" else "🌙", key="theme_btn"):
+        toggle_theme()
+        st.rerun()
+with cols[-1]:
+    lang = st.selectbox("Langue", ["fr", "en"], index=0 if st.session_state.lang == "fr" else 1,
+                        label_visibility="collapsed", key="lang_selector")
+    if lang != st.session_state.lang:
+        st.session_state.lang = lang
+        st.rerun()
 
 # Routage
 if st.session_state.page == get_text("nav_home", st.session_state.lang):
