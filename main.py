@@ -31,7 +31,26 @@ if "page" not in st.session_state:
 def toggle_theme():
     st.session_state.theme = "dark" if st.session_state.theme == "light" else "light"
 
-# CSS global avec styles pour menu hamburger
+# Liste des libellés de navigation
+nav_labels = [
+    get_text("nav_home", st.session_state.lang),
+    get_text("nav_analyses", st.session_state.lang),
+    get_text("nav_request", st.session_state.lang),
+    get_text("nav_resources", st.session_state.lang),
+    get_text("nav_contact", st.session_state.lang),
+    get_text("nav_admin", st.session_state.lang)
+]
+
+# --- Boutons cachés pour la navigation (déclenchés par JavaScript) ---
+for i, label in enumerate(nav_labels):
+    with st.container():
+        st.markdown(f'<div id="nav-btn-{i}" style="display:none;">', unsafe_allow_html=True)
+        if st.button(label, key=f"hidden_nav_{i}"):
+            st.session_state.page = label
+            st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+
+# CSS moderne et responsive
 st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -56,17 +75,17 @@ st.markdown(f"""
         gap: 0.5rem;
         flex-wrap: wrap;
     }}
-    .desktop-nav .stButton > button {{
+    .desktop-nav .nav-link {{
         background: transparent;
         border: none;
         color: {'#1e2b4f' if st.session_state.theme == 'light' else '#fff'};
         padding: 0.5rem 1.2rem;
         border-radius: 40px;
         font-weight: 500;
-        width: auto;
-        box-shadow: none;
+        cursor: pointer;
+        transition: background 0.3s;
     }}
-    .desktop-nav .stButton > button:hover {{
+    .desktop-nav .nav-link:hover {{
         background: rgba(26,54,93,0.1);
     }}
     .desktop-nav .nav-controls {{
@@ -98,45 +117,63 @@ st.markdown(f"""
         background: none;
         border: none;
         color: {'#1e2b4f' if st.session_state.theme == 'light' else '#fff'};
+        padding: 0 1rem;
     }}
 
-    /* Menu overlay */
+    /* Menu slide-in depuis la gauche (demi-plein) */
     .mobile-menu {{
-        display: none;
         position: fixed;
         top: 0;
-        left: 0;
-        width: 100%;
+        left: -80%;
+        width: 80%;
         height: 100%;
         background: {'#fff' if st.session_state.theme == 'light' else '#1a1a2e'};
         z-index: 1000;
+        display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 1.5rem;
+        gap: 2rem;
+        transition: left 0.3s ease-in-out;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.3);
     }}
     .mobile-menu.open {{
-        display: flex;
+        left: 0;
     }}
     .mobile-menu .mobile-link {{
-        font-size: 1.5rem;
+        font-size: 1.8rem;
         color: {'#1e2b4f' if st.session_state.theme == 'light' else '#fff'};
         text-decoration: none;
         cursor: pointer;
         padding: 0.5rem 2rem;
         border-radius: 40px;
         transition: background 0.3s;
+        font-weight: 500;
     }}
     .mobile-menu .mobile-link:hover {{
         background: rgba(26,54,93,0.1);
     }}
     .close-btn {{
         position: absolute;
-        top: 20px;
-        right: 30px;
-        font-size: 2rem;
+        top: 30px;
+        right: 40px;
+        font-size: 3rem;
         cursor: pointer;
         color: {'#1e2b4f' if st.session_state.theme == 'light' else '#fff'};
+    }}
+    /* Overlay semi-transparent derrière le menu */
+    .menu-overlay {{
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+    }}
+    .menu-overlay.open {{
+        display: block;
     }}
 
     @media (max-width: 768px) {{
@@ -150,31 +187,10 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-# Liste des libellés de navigation
-nav_labels = [
-    get_text("nav_home", st.session_state.lang),
-    get_text("nav_analyses", st.session_state.lang),
-    get_text("nav_request", st.session_state.lang),
-    get_text("nav_resources", st.session_state.lang),
-    get_text("nav_contact", st.session_state.lang),
-    get_text("nav_admin", st.session_state.lang)
-]
-
-# --- Boutons cachés pour la navigation (seront déclenchés par JavaScript) ---
-for i, label in enumerate(nav_labels):
-    with st.container():
-        # Chaque bouton est caché via CSS
-        st.markdown(f'<div id="nav-btn-{i}" style="display:none;">', unsafe_allow_html=True)
-        if st.button(label, key=f"hidden_nav_{i}"):
-            st.session_state.page = label
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-
 # --- En-tête mobile avec hamburger et contrôles ---
 st.markdown('<div class="mobile-header">', unsafe_allow_html=True)
-st.markdown('<button class="hamburger" onclick="document.getElementById(\'mobile-menu\').classList.add(\'open\')">☰</button>', unsafe_allow_html=True)
+st.markdown('<button class="hamburger" onclick="openMenu()">☰</button>', unsafe_allow_html=True)
 st.markdown('<div style="flex-grow:1;"></div>', unsafe_allow_html=True)
-# Contrôles dans l'en-tête mobile
 col_theme_mobile, col_lang_mobile = st.columns(2)
 with col_theme_mobile:
     if st.button("☀️" if st.session_state.theme == "light" else "🌙", key="theme_btn_mobile"):
@@ -188,27 +204,39 @@ with col_lang_mobile:
         st.rerun()
 st.markdown('</div>', unsafe_allow_html=True)
 
-# --- Overlay du menu mobile ---
+# --- Menu mobile slide-in + overlay ---
 mobile_menu_html = '<div id="mobile-menu" class="mobile-menu">'
-mobile_menu_html += '<span class="close-btn" onclick="document.getElementById(\'mobile-menu\').classList.remove(\'open\')">&times;</span>'
+mobile_menu_html += '<span class="close-btn" onclick="closeMenu()">&times;</span>'
 for i, label in enumerate(nav_labels):
-    # Le lien appelle le clic sur le bouton caché et ferme le menu
     mobile_menu_html += f'''
-    <a class="mobile-link" onclick="document.getElementById('nav-btn-{i}').click(); document.getElementById('mobile-menu').classList.remove('open');">
+    <a class="mobile-link" onclick="document.getElementById('nav-btn-{i}').click(); closeMenu();">
         {label}
     </a>
     '''
 mobile_menu_html += '</div>'
+mobile_menu_html += '<div id="menu-overlay" class="menu-overlay" onclick="closeMenu()"></div>'
 st.markdown(mobile_menu_html, unsafe_allow_html=True)
+
+# --- JavaScript pour ouvrir/fermer le menu ---
+st.markdown("""
+<script>
+function openMenu() {
+    document.getElementById('mobile-menu').classList.add('open');
+    document.getElementById('menu-overlay').classList.add('open');
+}
+function closeMenu() {
+    document.getElementById('mobile-menu').classList.remove('open');
+    document.getElementById('menu-overlay').classList.remove('open');
+}
+</script>
+""", unsafe_allow_html=True)
 
 # --- Barre de navigation desktop ---
 with st.container():
     st.markdown('<div class="desktop-nav">', unsafe_allow_html=True)
     st.markdown('<div class="nav-links">', unsafe_allow_html=True)
-    for label in nav_labels:
-        if st.button(label, key=f"nav_{label}"):
-            st.session_state.page = label
-            st.rerun()
+    for i, label in enumerate(nav_labels):
+        st.markdown(f'<span class="nav-link" onclick="document.getElementById(\'nav-btn-{i}\').click();">{label}</span>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div class="nav-controls">', unsafe_allow_html=True)
     col_theme, col_lang = st.columns(2)
