@@ -30,7 +30,23 @@ if "page" not in st.session_state:
 def toggle_theme():
     st.session_state.theme = "dark" if st.session_state.theme == "light" else "light"
 
-# CSS global
+nav_labels = [
+    get_text("nav_home", st.session_state.lang),
+    get_text("nav_analyses", st.session_state.lang),
+    get_text("nav_request", st.session_state.lang),
+    get_text("nav_resources", st.session_state.lang),
+    get_text("nav_contact", st.session_state.lang),
+    get_text("nav_admin", st.session_state.lang)
+]
+
+# Boutons cachés pour la navigation
+for i, label in enumerate(nav_labels):
+    st.markdown(f'<div id="nav-btn-{i}" style="display:none;">', unsafe_allow_html=True)
+    if st.button(label, key=f"hidden_nav_{i}"):
+        st.session_state.page = label
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
 st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap');
@@ -46,7 +62,6 @@ st.markdown(f"""
         --shadow: {'0 10px 30px rgba(0,0,0,0.05)' if st.session_state.theme == 'light' else '0 10px 30px rgba(0,0,0,0.3)'};
         --blur-amount: 10px;
     }}
-
     body {{
         background-color: var(--bg-primary);
         color: var(--text-primary);
@@ -118,40 +133,78 @@ st.markdown(f"""
         box-shadow: 0 15px 30px rgba(26,54,93,0.3);
         filter: brightness(1.1);
     }}
+
+    /* Barre de navigation horizontale */
+    .nav-bar {{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--card-bg);
+        backdrop-filter: blur(var(--blur-amount));
+        border-radius: 60px;
+        padding: 0.5rem 1rem;
+        margin-bottom: 2rem;
+        border: 1px solid var(--card-border);
+    }}
+    .nav-links {{
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }}
+    .nav-link {{
+        display: inline-block;
+        padding: 0.5rem 1.2rem;
+        border-radius: 40px;
+        color: var(--text-primary);
+        text-decoration: none;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s;
+    }}
+    .nav-link:hover {{
+        background: rgba(26, 54, 93, 0.1);
+    }}
+    .nav-link.active {{
+        background: var(--accent);
+        color: white !important;
+    }}
+    .lang-select {{
+        min-width: 40px;
+        padding: 0.3rem 0.8rem;
+        font-size: 0.9rem;
+        background: transparent;
+        color: var(--text-primary);
+        border: 1px solid var(--card-border);
+        border-radius: 40px;
+    }}
     @media (max-width: 768px) {{
-        .hero {{ padding: 2rem 1rem; }}
+        .nav-bar {{
+            flex-direction: column;
+            align-items: stretch;
+        }}
+        .nav-links {{
+            justify-content: center;
+        }}
     }}
 </style>
 """, unsafe_allow_html=True)
 
-# Libellés de navigation
-nav_labels = [
-    get_text("nav_home", st.session_state.lang),
-    get_text("nav_analyses", st.session_state.lang),
-    get_text("nav_request", st.session_state.lang),
-    get_text("nav_resources", st.session_state.lang),
-    get_text("nav_contact", st.session_state.lang),
-    get_text("nav_admin", st.session_state.lang)
-]
-
-# Créer des colonnes avec ratios : boutons = 1, langue = 0.3 (plus petite)
-col_ratios = [1] * len(nav_labels) + [0.3]
-cols = st.columns(col_ratios)
-
-# Placer les boutons de navigation dans les premières colonnes
-for i, label in enumerate(nav_labels):
-    with cols[i]:
-        if st.button(label, key=f"nav_{i}", use_container_width=True):
-            st.session_state.page = label
-            st.rerun()
-
-# Contrôle de langue dans la dernière colonne (plus petite)
-with cols[-1]:
+# Barre de navigation
+with st.container():
+    st.markdown('<div class="nav-bar">', unsafe_allow_html=True)
+    st.markdown('<div class="nav-links">', unsafe_allow_html=True)
+    for i, label in enumerate(nav_labels):
+        active_class = "active" if st.session_state.page == label else ""
+        st.markdown(f'<a class="nav-link {active_class}" onclick="document.getElementById(\'nav-btn-{i}\').click();">{label}</a>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div style="display:flex; align-items:center;">', unsafe_allow_html=True)
     lang = st.selectbox("Langue", ["fr", "en"], index=0 if st.session_state.lang == "fr" else 1,
                         label_visibility="collapsed", key="lang_selector")
     if lang != st.session_state.lang:
         st.session_state.lang = lang
         st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # Routage
 if st.session_state.page == get_text("nav_home", st.session_state.lang):
