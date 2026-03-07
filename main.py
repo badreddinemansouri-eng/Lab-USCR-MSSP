@@ -30,7 +30,7 @@ if "page" not in st.session_state:
 def toggle_theme():
     st.session_state.theme = "dark" if st.session_state.theme == "light" else "light"
 
-# CSS global (uniquement pour le thème et le contenu, pas pour la barre de navigation)
+# CSS global (uniquement pour le thème et le contenu)
 st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap');
@@ -140,13 +140,13 @@ cols = st.columns(len(nav_labels) + 2)
 # Placer les boutons de navigation dans les premières colonnes
 for i, label in enumerate(nav_labels):
     with cols[i]:
-        if st.button(label, key=f"nav_{i}"):
+        if st.button(label, key=f"nav_{i}", use_container_width=True):
             st.session_state.page = label
             st.rerun()
 
-# Dernière colonne pour les contrôles
+# Contrôles dans les deux dernières colonnes
 with cols[-2]:
-    if st.button("☀️" if st.session_state.theme == "light" else "🌙", key="theme_btn"):
+    if st.button("☀️" if st.session_state.theme == "light" else "🌙", key="theme_btn", use_container_width=True):
         toggle_theme()
         st.rerun()
 with cols[-1]:
