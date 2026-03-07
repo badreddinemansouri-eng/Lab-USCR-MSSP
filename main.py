@@ -49,7 +49,7 @@ nav_labels = [
     get_text("nav_admin", st.session_state.lang)
 ]
 
-# CSS minimal pour le responsive
+# CSS minimal et robuste
 st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -57,7 +57,7 @@ st.markdown(f"""
     body {{ background: {'#fff' if st.session_state.theme == 'light' else '#1a1a2e'}; }}
     .stApp {{ background: inherit; }}
 
-    /* Style des boutons de navigation */
+    /* Boutons de navigation */
     .nav-btn {{
         background: transparent;
         border: none;
@@ -66,13 +66,12 @@ st.markdown(f"""
         border-radius: 40px;
         font-weight: 500;
         cursor: pointer;
-        transition: background 0.3s;
     }}
     .nav-btn:hover {{
         background: rgba(26,54,93,0.1);
     }}
 
-    /* Barre desktop */
+    /* Desktop : barre horizontale */
     .desktop-nav {{
         display: flex;
         justify-content: space-between;
@@ -84,18 +83,8 @@ st.markdown(f"""
         margin-bottom: 2rem;
         border: 1px solid rgba(0,0,0,0.05);
     }}
-    .desktop-nav .nav-links {{
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-    }}
-    .desktop-nav .nav-controls {{
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-    }}
 
-    /* Header mobile */
+    /* Mobile : hamburger et menu */
     .mobile-header {{
         display: none;
         justify-content: space-between;
@@ -109,8 +98,6 @@ st.markdown(f"""
         border: none;
         color: {'#1e2b4f' if st.session_state.theme == 'light' else '#fff'};
     }}
-
-    /* Menu mobile (overlay) */
     .mobile-menu {{
         position: fixed;
         top: 0;
@@ -125,22 +112,12 @@ st.markdown(f"""
         justify-content: center;
         gap: 1.5rem;
     }}
-    .mobile-menu .close-btn {{
+    .close-btn {{
         position: absolute;
         top: 20px;
         right: 30px;
         font-size: 2rem;
         cursor: pointer;
-    }}
-    .mobile-menu .stButton > button {{
-        font-size: 1.5rem;
-        background: transparent;
-        border: none;
-        color: {'#1e2b4f' if st.session_state.theme == 'light' else '#fff'};
-        padding: 0.5rem 2rem;
-        border-radius: 40px;
-        width: auto;
-        box-shadow: none;
     }}
 
     @media (max-width: 768px) {{
@@ -154,31 +131,30 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-# --- En-tête mobile (visible seulement sur petits écrans) ---
-with st.container():
-    st.markdown('<div class="mobile-header">', unsafe_allow_html=True)
-    if st.button("☰", key="hamburger"):
-        open_menu()
+# --- En-tête mobile (visible sur petits écrans) ---
+st.markdown('<div class="mobile-header">', unsafe_allow_html=True)
+if st.button("☰", key="hamburger_btn"):
+    open_menu()
+    st.rerun()
+st.markdown('<div style="flex-grow:1;"></div>', unsafe_allow_html=True)
+col_theme_mobile, col_lang_mobile = st.columns(2)
+with col_theme_mobile:
+    if st.button("☀️" if st.session_state.theme == "light" else "🌙", key="theme_mobile"):
+        toggle_theme()
         st.rerun()
-    st.markdown('<div style="flex-grow:1;"></div>', unsafe_allow_html=True)
-    col_theme_mobile, col_lang_mobile = st.columns(2)
-    with col_theme_mobile:
-        if st.button("☀️" if st.session_state.theme == "light" else "🌙", key="theme_mobile"):
-            toggle_theme()
-            st.rerun()
-    with col_lang_mobile:
-        lang = st.selectbox("Langue", ["fr", "en"], index=0 if st.session_state.lang == "fr" else 1,
-                            label_visibility="collapsed", key="lang_mobile")
-        if lang != st.session_state.lang:
-            st.session_state.lang = lang
-            st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
+with col_lang_mobile:
+    lang = st.selectbox("Langue", ["fr", "en"], index=0 if st.session_state.lang == "fr" else 1,
+                        label_visibility="collapsed", key="lang_mobile")
+    if lang != st.session_state.lang:
+        st.session_state.lang = lang
+        st.rerun()
+st.markdown('</div>', unsafe_allow_html=True)
 
 # --- Menu mobile (affiché si ouvert) ---
 if st.session_state.mobile_menu_open:
     with st.container():
         st.markdown('<div class="mobile-menu">', unsafe_allow_html=True)
-        if st.button("✕", key="close_menu"):
+        if st.button("✕", key="close_menu_btn"):
             close_menu()
             st.rerun()
         for i, label in enumerate(nav_labels):
@@ -191,13 +167,14 @@ if st.session_state.mobile_menu_open:
 # --- Barre de navigation desktop (visible sur grands écrans) ---
 with st.container():
     st.markdown('<div class="desktop-nav">', unsafe_allow_html=True)
-    st.markdown('<div class="nav-links">', unsafe_allow_html=True)
+    # Utilisation de colonnes pour aligner horizontalement
+    cols = st.columns(len(nav_labels))
     for i, label in enumerate(nav_labels):
-        if st.button(label, key=f"desktop_nav_{i}"):
-            st.session_state.page = label
-            st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('<div class="nav-controls">', unsafe_allow_html=True)
+        with cols[i]:
+            if st.button(label, key=f"desktop_nav_{i}"):
+                st.session_state.page = label
+                st.rerun()
+    # Contrôles à droite
     col_theme, col_lang = st.columns(2)
     with col_theme:
         if st.button("☀️" if st.session_state.theme == "light" else "🌙", key="theme_desktop"):
@@ -210,9 +187,8 @@ with st.container():
             st.session_state.lang = lang
             st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
-# Routage des pages
+# --- Routage ---
 if st.session_state.page == get_text("nav_home", st.session_state.lang):
     show_home()
 elif st.session_state.page == get_text("nav_analyses", st.session_state.lang):
