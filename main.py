@@ -30,6 +30,7 @@ if "page" not in st.session_state:
 def toggle_theme():
     st.session_state.theme = "dark" if st.session_state.theme == "light" else "light"
 
+# Libellés de navigation
 nav_labels = [
     get_text("nav_home", st.session_state.lang),
     get_text("nav_analyses", st.session_state.lang),
@@ -39,7 +40,7 @@ nav_labels = [
     get_text("nav_admin", st.session_state.lang)
 ]
 
-# Boutons cachés pour la navigation
+# Boutons cachés (pour la navigation)
 for i, label in enumerate(nav_labels):
     st.markdown(f'<div id="nav-btn-{i}" style="display:none;">', unsafe_allow_html=True)
     if st.button(label, key=f"hidden_nav_{i}"):
@@ -47,6 +48,7 @@ for i, label in enumerate(nav_labels):
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
+# CSS global (identique à main (5).py + styles pour les boutons personnalisés)
 st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap');
@@ -62,6 +64,7 @@ st.markdown(f"""
         --shadow: {'0 10px 30px rgba(0,0,0,0.05)' if st.session_state.theme == 'light' else '0 10px 30px rgba(0,0,0,0.3)'};
         --blur-amount: 10px;
     }}
+
     body {{
         background-color: var(--bg-primary);
         color: var(--text-primary);
@@ -117,7 +120,9 @@ st.markdown(f"""
         transform: translateY(-8px) scale(1.02);
         box-shadow: 0 30px 60px rgba(0,0,0,0.15);
     }}
-    .stButton > button {{
+
+    /* Style des boutons personnalisés (copié de st.button) */
+    .custom-btn {{
         background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
         color: white;
         border: none;
@@ -127,84 +132,59 @@ st.markdown(f"""
         transition: all 0.3s;
         box-shadow: 0 8px 20px rgba(26,54,93,0.2);
         width: 100%;
+        cursor: pointer;
+        text-align: center;
+        display: inline-block;
+        font-size: 1rem;
     }}
-    .stButton > button:hover {{
+    .custom-btn:hover {{
         transform: translateY(-3px);
         box-shadow: 0 15px 30px rgba(26,54,93,0.3);
         filter: brightness(1.1);
     }}
-
-    /* Barre de navigation horizontale */
-    .nav-bar {{
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: var(--card-bg);
-        backdrop-filter: blur(var(--blur-amount));
-        border-radius: 60px;
-        padding: 0.5rem 1rem;
-        margin-bottom: 2rem;
-        border: 1px solid var(--card-border);
+    .custom-btn.active {{
+        background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
     }}
-    .nav-links {{
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
+    /* Conteneur des boutons */
+    .btn-container {{
+        width: 100%;
     }}
-    .nav-link {{
-        display: inline-block;
-        padding: 0.5rem 1.2rem;
-        border-radius: 40px;
-        color: var(--text-primary);
-        text-decoration: none;
-        font-weight: 500;
-        cursor: pointer;
-        transition: background 0.2s;
-    }}
-    .nav-link:hover {{
-        background: rgba(26, 54, 93, 0.1);
-    }}
-    .nav-link.active {{
-        background: var(--accent);
-        color: white !important;
-    }}
+    /* Sélecteur de langue */
     .lang-select {{
-        min-width: 40px;
+        min-width: 60px;
         padding: 0.3rem 0.8rem;
         font-size: 0.9rem;
-        background: transparent;
+        background: var(--card-bg);
         color: var(--text-primary);
         border: 1px solid var(--card-border);
         border-radius: 40px;
     }}
+    /* Responsive */
     @media (max-width: 768px) {{
-        .nav-bar {{
-            flex-direction: column;
-            align-items: stretch;
-        }}
-        .nav-links {{
-            justify-content: center;
-        }}
+        .hero {{ padding: 2rem 1rem; }}
     }}
 </style>
 """, unsafe_allow_html=True)
 
-# Barre de navigation
-with st.container():
-    st.markdown('<div class="nav-bar">', unsafe_allow_html=True)
-    st.markdown('<div class="nav-links">', unsafe_allow_html=True)
-    for i, label in enumerate(nav_labels):
+# Création des colonnes : une pour chaque bouton + une pour la langue
+col_ratios = [1] * len(nav_labels) + [0.3]
+cols = st.columns(col_ratios)
+
+# Affichage des boutons personnalisés
+for i, label in enumerate(nav_labels):
+    with cols[i]:
         active_class = "active" if st.session_state.page == label else ""
-        st.markdown(f'<a class="nav-link {active_class}" onclick="document.getElementById(\'nav-btn-{i}\').click();">{label}</a>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('<div style="display:flex; align-items:center;">', unsafe_allow_html=True)
+        # On utilise un div cliquable qui déclenche le bouton caché
+        st.markdown(f'<div class="custom-btn {active_class}" onclick="document.getElementById(\'nav-btn-{i}\').click();">{label}</div>', unsafe_allow_html=True)
+
+# Sélecteur de langue dans la dernière colonne
+with cols[-1]:
     lang = st.selectbox("Langue", ["fr", "en"], index=0 if st.session_state.lang == "fr" else 1,
                         label_visibility="collapsed", key="lang_selector")
     if lang != st.session_state.lang:
         st.session_state.lang = lang
         st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 # Routage
 if st.session_state.page == get_text("nav_home", st.session_state.lang):
