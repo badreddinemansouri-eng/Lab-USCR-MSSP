@@ -74,7 +74,7 @@ def show_home():
         
         # Utilisation de st.button standard pour la navigation
         if st.button(get_text("make_request", st.session_state.lang) + " →", key="home_request_btn"):
-            st.session_state.page = get_text("nav_request", st.session_state.lang)
+            st.session_state.selected_tab = 2  # index de l'onglet "Demande"
             st.rerun()
         
         st.markdown("</div>", unsafe_allow_html=True)
