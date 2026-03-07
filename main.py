@@ -41,31 +41,154 @@ tab_labels = [
     get_text("nav_admin", st.session_state.lang)
 ]
 
-# CSS minimal (uniquement pour le thème et le style des onglets)
+# CSS global complet (inclut le design de l'accueil et des onglets)
 st.markdown(f"""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    * {{ font-family: 'Inter', sans-serif; }}
-    body {{ background: {'#ffffff' if st.session_state.theme == 'light' else '#1a1a2e'}; }}
-    .stApp {{ background: inherit; }}
-    .main .block-container {{ background: inherit; }}
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+    :root {{
+        --bg-primary: {'#ffffff' if st.session_state.theme == 'light' else '#1a1a2e'};
+        --bg-secondary: {'#f8f9fa' if st.session_state.theme == 'light' else '#16213e'};
+        --text-primary: {'#1e2b4f' if st.session_state.theme == 'light' else '#e0e0e0'};
+        --text-secondary: {'#5a6b7e' if st.session_state.theme == 'light' else '#b0b0b0'};
+        --accent: #1e2b4f;
+        --accent-light: #2a3f6e;
+        --card-bg: {'rgba(255,255,255,0.7)' if st.session_state.theme == 'light' else 'rgba(30,30,50,0.7)'};
+        --card-border: {'rgba(0,0,0,0.05)' if st.session_state.theme == 'light' else 'rgba(255,255,255,0.05)'};
+        --shadow: {'0 10px 30px rgba(0,0,0,0.05)' if st.session_state.theme == 'light' else '0 10px 30px rgba(0,0,0,0.3)'};
+        --blur-amount: 10px;
+    }}
+
+    * {{
+        font-family: 'Inter', sans-serif;
+        box-sizing: border-box;
+    }}
+
+    body {{
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        transition: background-color 0.3s, color 0.3s;
+    }}
+    .stApp {{
+        background: var(--bg-primary);
+    }}
+    .main .block-container {{
+        background: var(--bg-primary);
+        box-shadow: var(--shadow);
+        padding: 2rem;
+        border-radius: 10px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }}
+
+    /* Animations */
+    @keyframes fadeIn {{
+        from {{ opacity: 0; transform: translateY(10px); }}
+        to {{ opacity: 1; transform: translateY(0); }}
+    }}
+
+    /* Style des onglets (horizontal et responsive) */
     .stTabs [data-baseweb="tab-list"] {{
         gap: 2rem;
         justify-content: center;
-        background-color: {'#f8f9fa' if st.session_state.theme == 'light' else '#16213e'};
+        background: var(--card-bg);
+        backdrop-filter: blur(var(--blur-amount));
         padding: 0.5rem;
         border-radius: 10px;
         margin-bottom: 2rem;
+        border: 1px solid var(--card-border);
     }}
     .stTabs [data-baseweb="tab"] {{
         font-size: 1.1rem;
         font-weight: 500;
-        color: {'#2c3e50' if st.session_state.theme == 'light' else '#e0e0e0'};
+        color: var(--text-primary);
     }}
     .stTabs [aria-selected="true"] {{
-        background-color: #667eea;
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
         color: white !important;
         border-radius: 5px;
+    }}
+
+    /* Contrôles thème/langue */
+    .controls {{
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }}
+    .controls .stButton > button,
+    .controls .stSelectbox {{
+        min-width: 40px;
+        padding: 0.2rem 0.8rem;
+        font-size: 0.9rem;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        color: var(--text-primary);
+    }}
+
+    /* Hero section */
+    .hero {{
+        position: relative;
+        overflow: hidden;
+        padding: 4rem 2rem;
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+        color: white;
+        border-radius: 40px;
+        margin-bottom: 2rem;
+        animation: fadeIn 0.8s ease;
+    }}
+    .hero::before {{
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" d="M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,117.3C960,107,1056,149,1152,165.3C1248,181,1344,171,1392,165.3L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"/></svg>') repeat-x bottom;
+        animation: wave 15s linear infinite;
+        opacity: 0.3;
+    }}
+    @keyframes wave {{
+        0% {{ background-position: 0 0; }}
+        100% {{ background-position: 1440px 0; }}
+    }}
+
+    /* Cartes */
+    .info-card, .analysis-card {{
+        background: var(--card-bg);
+        backdrop-filter: blur(var(--blur-amount));
+        border: 1px solid var(--card-border);
+        border-radius: 24px;
+        padding: 2rem;
+        box-shadow: var(--shadow);
+        transition: transform 0.3s, box-shadow 0.3s;
+        animation: fadeIn 0.8s ease;
+    }}
+    .info-card:hover, .analysis-card:hover {{
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+    }}
+
+    /* Boutons */
+    .stButton > button {{
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s;
+        box-shadow: 0 8px 20px rgba(26,54,93,0.2);
+        width: 100%;
+    }}
+    .stButton > button:hover {{
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(26,54,93,0.3);
+        filter: brightness(1.1);
+    }}
+
+    @media (max-width: 768px) {{
+        .hero {{ padding: 2rem 1rem; }}
+        .stTabs [data-baseweb="tab"] {{ font-size: 0.9rem; }}
     }}
 </style>
 """, unsafe_allow_html=True)
@@ -86,7 +209,7 @@ with col3:
 # Onglets
 tabs = st.tabs(tab_labels)
 
-# Afficher le contenu de l'onglet sélectionné
+# Affichage du contenu (l'utilisateur peut cliquer sur les onglets)
 with tabs[0]:
     show_home()
 with tabs[1]:
