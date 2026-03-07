@@ -1,4 +1,3 @@
-# main.py (identique à votre main (5).py, rien n'est changé)
 import streamlit as st
 from home import show_home
 from analyses import show_analyses
@@ -31,7 +30,7 @@ if "page" not in st.session_state:
 def toggle_theme():
     st.session_state.theme = "dark" if st.session_state.theme == "light" else "light"
 
-# CSS global (uniquement pour le thème et le contenu)
+# CSS global (identique)
 st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap');
@@ -135,8 +134,8 @@ nav_labels = [
     get_text("nav_admin", st.session_state.lang)
 ]
 
-# Créer des colonnes : une pour chaque bouton + deux pour les contrôles
-cols = st.columns(len(nav_labels) + 2)
+# Créer des colonnes : une pour chaque bouton + une seule pour le sélecteur de langue
+cols = st.columns(len(nav_labels) + 1)
 
 # Placer les boutons de navigation dans les premières colonnes
 for i, label in enumerate(nav_labels):
@@ -145,11 +144,7 @@ for i, label in enumerate(nav_labels):
             st.session_state.page = label
             st.rerun()
 
-# Contrôles dans les deux dernières colonnes
-with cols[-2]:
-    if st.button("☀️" if st.session_state.theme == "light" else "🌙", key="theme_btn", use_container_width=True):
-        toggle_theme()
-        st.rerun()
+# Contrôle de langue dans la dernière colonne
 with cols[-1]:
     lang = st.selectbox("Langue", ["fr", "en"], index=0 if st.session_state.lang == "fr" else 1,
                         label_visibility="collapsed", key="lang_selector")
