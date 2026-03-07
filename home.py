@@ -42,31 +42,31 @@ def show_home():
         """, unsafe_allow_html=True)
         
         st.markdown("""
-            <style>
-                #home_request_btn {
-                    animation: pulse 2s infinite;
-                    background: linear-gradient(135deg, #ff6b6b, #ee5a24) !important;
-                    border: none !important;
-                    color: white !important;
-                    font-weight: bold !important;
-                    font-size: 1.2rem !important;
-                    padding: 0.8rem 2rem !important;
-                    border-radius: 100px !important;
-                    width: 100% !important;
-                    margin-top: 1rem !important;
-                    cursor: pointer !important;
-                    transition: var(--transition) !important;
-                }
-                #home_request_btn:hover {
-                    transform: scale(1.05) !important;
-                    box-shadow: 0 10px 30px rgba(255, 107, 107, 0.5) !important;
-                }
-            </style>
-            """, unsafe_allow_html=True)
+        <style>
+            #home_request_btn {
+                animation: pulse 2s infinite;
+                background: linear-gradient(135deg, #ff6b6b, #ee5a24) !important;
+                border: none !important;
+                color: white !important;
+                font-weight: bold !important;
+                font-size: 1.2rem !important;
+                padding: 0.8rem 2rem !important;
+                border-radius: 100px !important;
+                width: 100% !important;
+                margin-top: 1rem !important;
+                cursor: pointer !important;
+                transition: var(--transition) !important;
+            }
+            #home_request_btn:hover {
+                transform: scale(1.05) !important;
+                box-shadow: 0 10px 30px rgba(255, 107, 107, 0.5) !important;
+            }
+        </style>
+        """, unsafe_allow_html=True)
         
+        # Dans la colonne de droite, après l'affichage de l'équipe
         if st.button(get_text("make_request", st.session_state.lang) + " →", key="home_request_btn"):
-            # Changer l'onglet sélectionné en utilisant une variable de session
-            st.session_state.selected_tab = 2
+            st.session_state.page = get_text("nav_request", st.session_state.lang)
             st.rerun()
         
         st.markdown("</div>", unsafe_allow_html=True)
