@@ -20,19 +20,17 @@ st.set_page_config(
 if not st.secrets.get("debug", False):
     st.set_option('client.showErrorDetails', False)
 
-# États de session
 if "theme" not in st.session_state:
     st.session_state.theme = "light"
 if "lang" not in st.session_state:
     st.session_state.lang = "fr"
-if "selected_tab" not in st.session_state:
-    st.session_state.selected_tab = 0
+if "page" not in st.session_state:
+    st.session_state.page = get_text("nav_home", st.session_state.lang)
 
 def toggle_theme():
     st.session_state.theme = "dark" if st.session_state.theme == "light" else "light"
 
-# Libellés des onglets
-tab_labels = [
+nav_labels = [
     get_text("nav_home", st.session_state.lang),
     get_text("nav_analyses", st.session_state.lang),
     get_text("nav_request", st.session_state.lang),
@@ -41,7 +39,6 @@ tab_labels = [
     get_text("nav_admin", st.session_state.lang)
 ]
 
-# CSS global complet (inclut le design de l'accueil et des onglets)
 st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap');
@@ -57,12 +54,6 @@ st.markdown(f"""
         --shadow: {'0 10px 30px rgba(0,0,0,0.05)' if st.session_state.theme == 'light' else '0 10px 30px rgba(0,0,0,0.3)'};
         --blur-amount: 10px;
     }}
-
-    * {{
-        font-family: 'Inter', sans-serif;
-        box-sizing: border-box;
-    }}
-
     body {{
         background-color: var(--bg-primary);
         color: var(--text-primary);
@@ -79,53 +70,52 @@ st.markdown(f"""
         max-width: 1200px;
         margin: 0 auto;
     }}
-
-    /* Animations */
-    @keyframes fadeIn {{
-        from {{ opacity: 0; transform: translateY(10px); }}
-        to {{ opacity: 1; transform: translateY(0); }}
-    }}
-
-    /* Style des onglets (horizontal et responsive) */
-    .stTabs [data-baseweb="tab-list"] {{
-        gap: 2rem;
-        justify-content: center;
+    .nav-container {{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
         background: var(--card-bg);
         backdrop-filter: blur(var(--blur-amount));
-        padding: 0.5rem;
-        border-radius: 10px;
+        border-radius: 60px;
+        padding: 0.5rem 1rem;
         margin-bottom: 2rem;
         border: 1px solid var(--card-border);
     }}
-    .stTabs [data-baseweb="tab"] {{
-        font-size: 1.1rem;
-        font-weight: 500;
-        color: var(--text-primary);
-    }}
-    .stTabs [aria-selected="true"] {{
-        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-        color: white !important;
-        border-radius: 5px;
-    }}
-
-    /* Contrôles thème/langue */
-    .controls {{
+    .nav-links {{
         display: flex;
-        justify-content: flex-end;
+        flex-wrap: wrap;
         gap: 0.5rem;
-        margin-bottom: 1rem;
     }}
-    .controls .stButton > button,
-    .controls .stSelectbox {{
-        min-width: 40px;
-        padding: 0.2rem 0.8rem;
-        font-size: 0.9rem;
-        background: var(--card-bg);
-        border: 1px solid var(--card-border);
+    .nav-links .stButton > button {{
+        background: transparent;
         color: var(--text-primary);
+        border: none;
+        padding: 0.5rem 1.2rem;
+        border-radius: 40px;
+        font-weight: 500;
+        box-shadow: none;
+        width: auto;
+        white-space: nowrap;
     }}
-
-    /* Hero section */
+    .nav-links .stButton > button:hover {{
+        background: rgba(26, 54, 93, 0.1);
+    }}
+    .nav-controls {{
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }}
+    .nav-controls .stButton > button,
+    .nav-controls .stSelectbox {{
+        min-width: 40px;
+        padding: 0.3rem 0.8rem;
+        font-size: 0.9rem;
+        background: transparent;
+        color: var(--text-primary);
+        border: 1px solid var(--card-border);
+        border-radius: 40px;
+    }}
     .hero {{
         position: relative;
         overflow: hidden;
@@ -151,8 +141,10 @@ st.markdown(f"""
         0% {{ background-position: 0 0; }}
         100% {{ background-position: 1440px 0; }}
     }}
-
-    /* Cartes */
+    @keyframes fadeIn {{
+        from {{ opacity: 0; transform: translateY(10px); }}
+        to {{ opacity: 1; transform: translateY(0); }}
+    }}
     .info-card, .analysis-card {{
         background: var(--card-bg);
         backdrop-filter: blur(var(--blur-amount));
@@ -167,8 +159,6 @@ st.markdown(f"""
         transform: translateY(-8px) scale(1.02);
         box-shadow: 0 30px 60px rgba(0,0,0,0.15);
     }}
-
-    /* Boutons */
     .stButton > button {{
         background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
         color: white;
@@ -185,40 +175,55 @@ st.markdown(f"""
         box-shadow: 0 15px 30px rgba(26,54,93,0.3);
         filter: brightness(1.1);
     }}
-
     @media (max-width: 768px) {{
+        .nav-container {{
+            flex-direction: column;
+            align-items: stretch;
+        }}
+        .nav-links {{
+            justify-content: center;
+        }}
+        .nav-controls {{
+            justify-content: center;
+            margin-top: 0.5rem;
+        }}
         .hero {{ padding: 2rem 1rem; }}
-        .stTabs [data-baseweb="tab"] {{ font-size: 0.9rem; }}
     }}
 </style>
 """, unsafe_allow_html=True)
 
-# Barre de contrôle (thème et langue) en haut à droite
-col1, col2, col3 = st.columns([6, 1, 1])
-with col2:
-    if st.button("☀️" if st.session_state.theme == "light" else "🌙", key="theme_btn"):
-        toggle_theme()
-        st.rerun()
-with col3:
-    lang = st.selectbox("Langue", ["fr", "en"], index=0 if st.session_state.lang == "fr" else 1,
-                        label_visibility="collapsed", key="lang_selector")
-    if lang != st.session_state.lang:
-        st.session_state.lang = lang
-        st.rerun()
+with st.container():
+    st.markdown('<div class="nav-container">', unsafe_allow_html=True)
+    st.markdown('<div class="nav-links">', unsafe_allow_html=True)
+    for label in nav_labels:
+        if st.button(label, key=f"nav_{label}"):
+            st.session_state.page = label
+            st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div class="nav-controls">', unsafe_allow_html=True)
+    col_theme, col_lang = st.columns(2)
+    with col_theme:
+        if st.button("☀️" if st.session_state.theme == "light" else "🌙", key="theme_btn"):
+            toggle_theme()
+            st.rerun()
+    with col_lang:
+        lang = st.selectbox("Langue", ["fr", "en"], index=0 if st.session_state.lang == "fr" else 1,
+                            label_visibility="collapsed", key="lang_selector")
+        if lang != st.session_state.lang:
+            st.session_state.lang = lang
+            st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-# Onglets
-tabs = st.tabs(tab_labels)
-
-# Affichage du contenu (l'utilisateur peut cliquer sur les onglets)
-with tabs[0]:
+if st.session_state.page == get_text("nav_home", st.session_state.lang):
     show_home()
-with tabs[1]:
+elif st.session_state.page == get_text("nav_analyses", st.session_state.lang):
     show_analyses()
-with tabs[2]:
+elif st.session_state.page == get_text("nav_request", st.session_state.lang):
     show_request()
-with tabs[3]:
+elif st.session_state.page == get_text("nav_resources", st.session_state.lang):
     show_resources()
-with tabs[4]:
+elif st.session_state.page == get_text("nav_contact", st.session_state.lang):
     show_contact()
-with tabs[5]:
+elif st.session_state.page == get_text("nav_admin", st.session_state.lang):
     show_admin()
