@@ -43,31 +43,31 @@ def show_home():
             <span style="color:var(--text-secondary);">Directeur de l'unité</span></p>
         """, unsafe_allow_html=True)
         
-        # Bouton "Faire une demande" attractif (avec animation CSS et couleur)
+        # Style spécifique pour le bouton "Faire une demande"
         st.markdown("""
         <style>
+            #home_request_btn {
+                animation: pulse 2s infinite !important;
+                background: linear-gradient(135deg, #ff6b6b, #ee5a24) !important;
+                border: none !important;
+                color: white !important;
+                font-weight: bold !important;
+                font-size: 1.2rem !important;
+                padding: 0.8rem 2rem !important;
+                border-radius: 50px !important;
+                width: 100% !important;
+                margin-top: 1rem !important;
+                cursor: pointer !important;
+                transition: all 0.3s !important;
+            }
+            #home_request_btn:hover {
+                transform: scale(1.05) !important;
+                box-shadow: 0 10px 30px rgba(255, 107, 107, 0.5) !important;
+            }
             @keyframes pulse {
                 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
                 70% { transform: scale(1.05); box-shadow: 0 0 20px 10px rgba(255, 107, 107, 0.3); }
                 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
-            }
-            .request-button {
-                animation: pulse 2s infinite;
-                background: linear-gradient(135deg, #ff6b6b, #ee5a24) !important;
-                border: none;
-                color: white;
-                font-weight: bold;
-                font-size: 1.2rem;
-                padding: 0.8rem 2rem;
-                border-radius: 50px;
-                width: 100%;
-                margin-top: 1rem;
-                cursor: pointer;
-                transition: all 0.3s;
-            }
-            .request-button:hover {
-                transform: scale(1.05);
-                box-shadow: 0 10px 30px rgba(255, 107, 107, 0.5);
             }
         </style>
         """, unsafe_allow_html=True)
