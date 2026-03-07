@@ -66,7 +66,7 @@ def show_home():
         
         # Dans la colonne de droite, après l'affichage de l'équipe
         if st.button(get_text("make_request", st.session_state.lang) + " →", key="home_request_btn"):
-            st.session_state.page = get_text("nav_request", st.session_state.lang)
+            st.session_state.selected_tab = 2
             st.rerun()
         
         st.markdown("</div>", unsafe_allow_html=True)
