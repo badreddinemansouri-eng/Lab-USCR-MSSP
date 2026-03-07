@@ -30,7 +30,6 @@ if "page" not in st.session_state:
 def toggle_theme():
     st.session_state.theme = "dark" if st.session_state.theme == "light" else "light"
 
-# Libellés de navigation
 nav_labels = [
     get_text("nav_home", st.session_state.lang),
     get_text("nav_analyses", st.session_state.lang),
@@ -120,7 +119,7 @@ st.markdown(f"""
         box-shadow: 0 30px 60px rgba(0,0,0,0.15);
     }}
 
-    /* Boutons personnalisés (style identique aux st.button de main (5).py) */
+    /* Style des boutons personnalisés (identique aux st.button de main (5).py) */
     .custom-btn {{
         background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
         color: white;
@@ -135,17 +134,16 @@ st.markdown(f"""
         text-align: center;
         display: inline-block;
         font-size: 1rem;
-        border: 2px solid transparent;
     }}
     .custom-btn:hover {{
         transform: translateY(-3px);
         box-shadow: 0 15px 30px rgba(26,54,93,0.3);
         filter: brightness(1.1);
     }}
-    /* Indicateur de page active : bordure blanche et ombre renforcée */
+    /* Indicateur de page active : inversion du dégradé */
     .custom-btn.active {{
-        border: 2px solid white;
-        box-shadow: 0 8px 20px rgba(255,255,255,0.3);
+        background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
     }}
     /* Sélecteur de langue */
     .lang-select {{
