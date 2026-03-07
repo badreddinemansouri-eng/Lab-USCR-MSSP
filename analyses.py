@@ -1,10 +1,11 @@
 import streamlit as st
 from utils_i18n import get_text
+from components import analysis_card
 
 def show_analyses():
     st.markdown("""
-    <div class="main-header hero" style="background:linear-gradient(135deg, #1e2b4f 0%, #2a3f6e 100%);">
-        <h1>🔬 """ + get_text("nav_analyses", st.session_state.lang) + """</h1>
+    <div class="hero" style="background:linear-gradient(135deg, #3b82f6, #60a5fa);">
+        <h1>🔬 Analyses disponibles</h1>
         <p>Découvrez nos techniques de caractérisation</p>
     </div>
     """, unsafe_allow_html=True)
@@ -12,43 +13,31 @@ def show_analyses():
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.markdown("""
-        <div class="analysis-card">
-            <img src="https://via.placeholder.com/400x250?text=Analyse+BET" alt="BET">
-            <h3>📈 Surface spécifique (BET)</h3>
-            <p>Méthode multipoints pour une mesure précise de la surface des matériaux.</p>
-            <div class="badge">Catalyse • Pharmacie • Nanomatériaux</div>
-        </div>
-        """, unsafe_allow_html=True)
-        if st.button("🔍 Découvrir BET", key="bet_btn", use_container_width=True):
-            st.session_state["analysis_page"] = "BET"
-            st.rerun()
+        analysis_card(
+            "📈 Surface spécifique (BET)",
+            "Méthode multipoints pour une mesure précise de la surface des matériaux.",
+            "Catalyse • Pharmacie • Nanomatériaux",
+            "https://via.placeholder.com/400x250?text=Analyse+BET",
+            "BET"
+        )
 
     with col2:
-        st.markdown("""
-        <div class="analysis-card">
-            <img src="https://via.placeholder.com/400x250?text=Porosité" alt="Porosité">
-            <h3>🕳️ Porosité</h3>
-            <p>Distribution de taille des pores par BJH, DFT et t-plot.</p>
-            <div class="badge">MOFs • Zéolithes • Géosciences</div>
-        </div>
-        """, unsafe_allow_html=True)
-        if st.button("🔍 Découvrir Porosité", key="poro_btn", use_container_width=True):
-            st.session_state["analysis_page"] = "Porosite"
-            st.rerun()
+        analysis_card(
+            "🕳️ Porosité",
+            "Distribution de taille des pores par BJH, DFT et t-plot.",
+            "MOFs • Zéolithes • Géosciences",
+            "https://via.placeholder.com/400x250?text=Porosité",
+            "Porosite"
+        )
 
     with col3:
-        st.markdown("""
-        <div class="analysis-card">
-            <img src="https://via.placeholder.com/400x250?text=Isothermes" alt="Isothermes">
-            <h3>📊 Isothermes</h3>
-            <p>Isothermes complètes d'adsorption/désorption N₂ et CO₂.</p>
-            <div class="badge">Adsorbants • Stockage de gaz • Énergie</div>
-        </div>
-        """, unsafe_allow_html=True)
-        if st.button("🔍 Découvrir Isothermes", key="iso_btn", use_container_width=True):
-            st.session_state["analysis_page"] = "Isothermes"
-            st.rerun()
+        analysis_card(
+            "📊 Isothermes",
+            "Isothermes complètes d'adsorption/désorption N₂ et CO₂.",
+            "Adsorbants • Stockage de gaz • Énergie",
+            "https://via.placeholder.com/400x250?text=Isothermes",
+            "Isothermes"
+        )
 
     if "analysis_page" in st.session_state:
         st.markdown("---")
