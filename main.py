@@ -39,7 +39,6 @@ nav_labels = [
     get_text("nav_admin", st.session_state.lang)
 ]
 
-# CSS global (identique à main (5).py)
 st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap');
@@ -126,13 +125,18 @@ st.markdown(f"""
         box-shadow: 0 15px 30px rgba(26,54,93,0.3);
         filter: brightness(1.1);
     }}
-    /* Indicateur de page active : petite pastille sous le bouton */
+    /* Indicateur de page active : barre orange */
     .active-indicator {{
         height: 4px;
         width: 80%;
         margin: 4px auto 0;
-        background: white;
+        background: #ffaa00;
         border-radius: 2px;
+    }}
+    /* Sélecteur de langue plus petit */
+    .lang-col .stSelectbox {{
+        transform: scale(0.8);
+        transform-origin: left center;
     }}
     @media (max-width: 768px) {{
         .hero {{ padding: 2rem 1rem; }}
@@ -140,25 +144,24 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-# Barre de navigation : st.button normaux
 cols = st.columns(len(nav_labels) + 1)
 for i, label in enumerate(nav_labels):
     with cols[i]:
         if st.button(label, key=f"nav_{i}", use_container_width=True):
             st.session_state.page = label
             st.rerun()
-        # Indicateur visuel si c'est la page active
         if st.session_state.page == label:
             st.markdown('<div class="active-indicator"></div>', unsafe_allow_html=True)
 
 with cols[-1]:
+    st.markdown('<div class="lang-col">', unsafe_allow_html=True)
     lang = st.selectbox("Langue", ["fr", "en"], index=0 if st.session_state.lang == "fr" else 1,
                         label_visibility="collapsed", key="lang_selector")
+    st.markdown('</div>', unsafe_allow_html=True)
     if lang != st.session_state.lang:
         st.session_state.lang = lang
         st.rerun()
 
-# Routage
 if st.session_state.page == get_text("nav_home", st.session_state.lang):
     show_home()
 elif st.session_state.page == get_text("nav_analyses", st.session_state.lang):
