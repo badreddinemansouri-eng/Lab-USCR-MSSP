@@ -72,6 +72,7 @@ def show_home():
         </style>
         """, unsafe_allow_html=True)
         
+        # Utilisation de st.button standard pour la navigation
         if st.button(get_text("make_request", st.session_state.lang) + " →", key="home_request_btn"):
             st.session_state.page = get_text("nav_request", st.session_state.lang)
             st.rerun()
@@ -164,7 +165,6 @@ def show_home():
     # Récupérer les actualités depuis Supabase
     news_list = get_all_news()
     if news_list:
-        # Afficher les actualités par paires
         for i in range(0, len(news_list), 2):
             cols = st.columns(2)
             for j in range(2):
