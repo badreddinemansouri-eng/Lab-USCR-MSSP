@@ -43,7 +43,7 @@ def show_home():
             <span style="color:var(--text-secondary);">Directeur de l'unité</span></p>
         """, unsafe_allow_html=True)
         
-        # Style spécifique pour le bouton "Faire une demande"
+        # Bouton "Faire une demande" avec animation
         st.markdown("""
         <style>
             #home_request_btn {
@@ -72,9 +72,8 @@ def show_home():
         </style>
         """, unsafe_allow_html=True)
         
-        # Utilisation de st.button standard pour la navigation
         if st.button(get_text("make_request", st.session_state.lang) + " →", key="home_request_btn"):
-            st.session_state.selected_tab = 2  # index de l'onglet "Demande"
+            st.session_state.page = get_text("nav_request", st.session_state.lang)
             st.rerun()
         
         st.markdown("</div>", unsafe_allow_html=True)
